@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace FPPCFilingDb.Migrations
+namespace J4JSoftware.FppcFiling.Migrations
 {
     public partial class InitialCreate : Migration
     {

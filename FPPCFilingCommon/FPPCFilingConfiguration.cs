@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using J4JSoftware.Logging;
 
-namespace FPPCFilingCommon
+namespace J4JSoftware.FppcFiling
 {
-    public class FPPCFilingConfiguration
+    public class FppcFilingConfiguration
     {
-        public static string DbName = "FPPCFiling.db";
+        public static string DbName = "FppcFiling.db";
 
         private string _dbPath = Path.Combine( Environment.CurrentDirectory, DbName );
 

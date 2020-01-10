@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace FPPCFilingDb
+namespace J4JSoftware.FppcFiling
 {
     public interface IEntityConfiguration
     {

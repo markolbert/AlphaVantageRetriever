@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using FPPCFilingCommon;
+using J4JSoftware.FppcFiling;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace AlphaVantageDb
+namespace J4JSoftware.FppcFiling
 {
-    public class DesignTimeFactory : IDesignTimeDbContextFactory<FPPCFilingContext>
+    public class DesignTimeFactory : IDesignTimeDbContextFactory<FppcFilingContext>
     {
-        public FPPCFilingContext CreateDbContext( string[] args )
+        public FppcFilingContext CreateDbContext( string[] args )
         {
-            var config = new FPPCFilingConfiguration()
+            var config = new FppcFilingConfiguration()
             {
-                DatabasePath = Path.Combine( Environment.CurrentDirectory, FPPCFilingConfiguration.DbName )
+                DatabasePath = Path.Combine( Environment.CurrentDirectory, FppcFilingConfiguration.DbName )
             };
 
-            return new FPPCFilingContext(config);
+            return new FppcFilingContext(config);
         }
     }
 }

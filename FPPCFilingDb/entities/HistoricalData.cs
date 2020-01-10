@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FPPCFilingDb
+namespace J4JSoftware.FppcFiling
 {
     [EntityConfiguration( typeof( HistoricalDataConfigurator ) )]
     public class HistoricalData

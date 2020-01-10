@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AlphaVantageRetriever
+namespace J4JSoftware.AlphaVantageRetriever
 {
     public class AlphaVantageData
     {

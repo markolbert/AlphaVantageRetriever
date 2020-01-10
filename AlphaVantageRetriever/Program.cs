@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using AlphaVantageRetriever;
+using J4JSoftware.AlphaVantageRetriever;
 using Microsoft.Extensions.Configuration;
 using ServiceStack;
 using ServiceStack.Text;

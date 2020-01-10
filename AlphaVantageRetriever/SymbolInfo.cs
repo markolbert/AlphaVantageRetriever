@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AlphaVantageRetriever
+namespace J4JSoftware.AlphaVantageRetriever
 {
     public class SymbolInfo
     {

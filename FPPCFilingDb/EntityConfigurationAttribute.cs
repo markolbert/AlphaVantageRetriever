@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FPPCFilingDb
+namespace J4JSoftware.FppcFiling
 {
     [AttributeUsage( AttributeTargets.Class, AllowMultiple = false, Inherited = false )]
     public class EntityConfigurationAttribute : Attribute

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using FPPCFilingCommon;
-using FPPCFilingDb;
+using J4JSoftware.FppcFiling;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace AlphaVantageDb
+namespace J4JSoftware.FppcFiling
 {
-    public class FPPCFilingContext : DbContext
+    public class FppcFilingContext : DbContext
     {
-        private readonly FPPCFilingConfiguration _config;
+        private readonly FppcFilingConfiguration _config;
 
-        public FPPCFilingContext( FPPCFilingConfiguration config )
+        public FppcFilingContext( FppcFilingConfiguration config )
         {
             _config = config ?? throw new NullReferenceException( nameof(config) );
         }

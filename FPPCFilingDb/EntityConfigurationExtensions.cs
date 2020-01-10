@@ -2,7 +2,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
-namespace FPPCFilingDb
+namespace J4JSoftware.FppcFiling
 {
     public static class EntityConfigurationExtensions
     {

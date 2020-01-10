@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FPPCFilingDb
+namespace J4JSoftware.FppcFiling
 {
     public abstract class EntityConfigurator<TEntity> : IEntityConfiguration<TEntity>
         where TEntity : class
