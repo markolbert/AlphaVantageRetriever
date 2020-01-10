@@ -11,7 +11,9 @@ namespace J4JSoftware.FppcFiling
 
         private string _dbPath = Path.Combine( Environment.CurrentDirectory, DbName );
 
-        public List<string> Sources { get; set; }
+        public string ApiKey { get; set; }
+        public string PathToSecuritiesFile { get; set; }
+        //public List<string> Sources { get; set; }
 
         public string DatabasePath
         {

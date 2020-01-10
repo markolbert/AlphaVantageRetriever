@@ -1,3 +1,11 @@
 {
-  "PathToSecuritiesFile": "C:\\Users\\Mark\\OneDrive - arcabama\\City\\FPPC\\2020\\2019 Securities.csv"
+  "PathToSecuritiesFile": "C:\\Users\\Mark\\OneDrive - arcabama\\City\\FPPC\\2020\\2019 Securities.csv",
+  "Logger": {
+    "SourceMessageTemplate": "({File}:{Line})",
+    "MemberMessageTemplate": "{SourceContext}::{Member}",
+    "IncludeSource": true,
+    "IncludeAssemblyName": false,
+    "SourceRootPath": "C:/Programming/AlphaVantage",
+    "MinLogLevel": "Information"
+  }
 }
