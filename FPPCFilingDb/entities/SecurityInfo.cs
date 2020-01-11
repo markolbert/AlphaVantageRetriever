@@ -13,6 +13,8 @@ namespace J4JSoftware.FppcFiling
         public string Ticker { get; set; }
         public string Category { get; set; }
         public bool Reportable { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool RetrievedData { get; set; }
 
         public List<HistoricalData> HistoricalData { get; set; }
     }
@@ -21,6 +23,8 @@ namespace J4JSoftware.FppcFiling
     {
         protected override void Configure( EntityTypeBuilder<SecurityInfo> builder )
         {
+            builder.HasKey( x => x.ID );
+
             builder.HasIndex( x => x.Issuer )
                 .IsUnique();
 

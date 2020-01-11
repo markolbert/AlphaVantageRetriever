@@ -46,7 +46,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                          .SetMinimumLevel( loggerConfig.MinLogLevel )
                          .WriteTo.Console( restrictedToMinimumLevel: loggerConfig.MinLogLevel )
                          .WriteTo.File(
-                             path: J4JLoggingExtensions.DefineLocalAppDataLogPath( "log.txt" ),
+                             path: J4JLoggingExtensions.DefineLocalAppDataLogPath( "log.txt", "J4JSoftware/AlphaVantageRetriever" ),
                              restrictedToMinimumLevel: loggerConfig.MinLogLevel
                          )
                          .CreateLogger();
@@ -56,6 +56,10 @@ namespace J4JSoftware.AlphaVantageRetriever
             builder.RegisterGeneric( typeof( J4JLogger<> ) )
                 .As( typeof( IJ4JLogger<> ) )
                 .SingleInstance();
+
+            builder.RegisterType<DataRetriever>()
+                .SingleInstance()
+                .AsSelf();
 
             return new AutofacServiceProvider( builder.Build() );
         }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace J4JSoftware.FppcFiling.Migrations
 {
     [DbContext(typeof(FppcFilingContext))]
-    partial class FPPCFilingContextModelSnapshot : ModelSnapshot
+    partial class FppcFilingContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -16,40 +16,35 @@ namespace J4JSoftware.FppcFiling.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.0");
 
-            modelBuilder.Entity("FPPCFilingDb.HistoricalData", b =>
+            modelBuilder.Entity("J4JSoftware.FppcFiling.HistoricalData", b =>
                 {
-                    b.Property<string>("SecurityInfoID")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("SecurityInfoID")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("Close")
-                        .HasColumnType("REAL");
+                    b.Property<decimal>("Close")
+                        .HasColumnType("TEXT");
 
-                    b.Property<double>("High")
-                        .HasColumnType("REAL");
+                    b.Property<decimal>("High")
+                        .HasColumnType("TEXT");
 
-                    b.Property<double>("Low")
-                        .HasColumnType("REAL");
+                    b.Property<decimal>("Low")
+                        .HasColumnType("TEXT");
 
-                    b.Property<double>("Open")
-                        .HasColumnType("REAL");
+                    b.Property<decimal>("Open")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int?>("SecurityInfoID1")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("Volume")
-                        .HasColumnType("REAL");
+                    b.Property<decimal>("Volume")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("SecurityInfoID", "Timestamp");
-
-                    b.HasIndex("SecurityInfoID1");
 
                     b.ToTable("HistoricalData");
                 });
 
-            modelBuilder.Entity("FPPCFilingDb.SecurityInfo", b =>
+            modelBuilder.Entity("J4JSoftware.FppcFiling.SecurityInfo", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -58,10 +53,16 @@ namespace J4JSoftware.FppcFiling.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Issuer")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Reportable")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("RetrievedData")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Ticker")
@@ -78,11 +79,13 @@ namespace J4JSoftware.FppcFiling.Migrations
                     b.ToTable("Securities");
                 });
 
-            modelBuilder.Entity("FPPCFilingDb.HistoricalData", b =>
+            modelBuilder.Entity("J4JSoftware.FppcFiling.HistoricalData", b =>
                 {
-                    b.HasOne("FPPCFilingDb.SecurityInfo", "SecurityInfo")
+                    b.HasOne("J4JSoftware.FppcFiling.SecurityInfo", "SecurityInfo")
                         .WithMany("HistoricalData")
-                        .HasForeignKey("SecurityInfoID1");
+                        .HasForeignKey("SecurityInfoID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

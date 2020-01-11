@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using J4JSoftware.FppcFiling;
 using J4JSoftware.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceStack;
 
@@ -14,34 +16,34 @@ namespace J4JSoftware.AlphaVantageRetriever
     {
         private static FppcFilingConfiguration _appConfig;
         private static IJ4JLogger<Program> _logger;
+        private static Timer _timer;
 
         static void Main( string[] args )
         {
             _logger = AppServiceProvider.Instance.GetRequiredService<IJ4JLogger<Program>>();
             _appConfig = AppServiceProvider.Instance.GetRequiredService<FppcFilingConfiguration>();
 
-            //var appConfig = new ConfigurationBuilder()
-            //    .AddUserSecrets<Program>()
-            //    .AddJsonFile("configInfo.json")
-            //    .Build();
+            // this AutoResetEvent is 'shared' by the calling method and the data retrieval method
+            // and is used to indicate when all available SymbolInfo objects have been processed
+            var jobDone = new AutoResetEvent( false );
 
-            //var configInfo = appConfig.Get<ConfigInfo>();
+            var interval = Convert.ToInt32( 60000 / _appConfig.CallsPerMinute );
+            var dataRetriever = AppServiceProvider.Instance.GetRequiredService<DataRetriever>();
 
-            var symbols = File.ReadAllText( _appConfig.PathToSecuritiesFile ).FromCsv<List<SymbolInfo>>();
+            _logger.Information( "Job started" );
 
-            foreach( var curSymbol in symbols.Where(s=>s.Reportable) )
-            {
-                if(String.IsNullOrEmpty(curSymbol.Ticker))
-                    _logger.Error<string>("No ticker for {0}",curSymbol.Issuer  );
-                else
-                {
-                    var monthlyPrices = 
-                        $"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={curSymbol.Ticker}&outputsize=full&apikey={_appConfig.ApiKey}&datatype=csv"
-                            .GetStringFromUrl().FromCsv<List<AlphaVantageData>>();
+            // this creates the timer and starts it running
+            _timer = new Timer( dataRetriever.ProcessNextSymbol, jobDone, 0, interval);
 
-                    _logger.Information<string, int>( "{0}: {1} lines retrieved", curSymbol.Ticker, monthlyPrices.Count );
-                }
-            }
+            // wait until the processing is done
+            jobDone.WaitOne();
+
+            // now delete any securities from the database that aren't in the symbols file
+            _logger.Information( "Deleting unneeded securities from database" );
+
+            dataRetriever.DeleteUnusedSecurities();
+
+            _logger.Information( "Job finished" );
         }
     }
 }
