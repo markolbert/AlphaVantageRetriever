@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AlphaVantageRetriever": {
+      "commandName": "Project",
+      "commandLineArgs": "\"-x\""
+    }
+  }
+}

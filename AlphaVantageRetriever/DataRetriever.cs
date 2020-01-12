@@ -14,30 +14,51 @@ namespace J4JSoftware.AlphaVantageRetriever
     public class DataRetriever
     {
         private readonly object _lockObject = new object();
+        private FppcFilingConfiguration _config;
+        private List<SymbolInfo> _symbols;
 
         public DataRetriever( 
             FppcFilingContext dbContext,
-            FppcFilingConfiguration config, 
             IJ4JLogger<DataRetriever> logger )
         {
             DbContext = dbContext ?? throw new NullReferenceException( nameof(dbContext) );
             Logger = logger ?? throw new NullReferenceException( nameof(logger) );
-            var temp = config ?? throw new NullReferenceException( nameof(config) );
-
-            Symbols = File.ReadAllText( temp.PathToSecuritiesFile )
-                .FromCsv<List<SymbolInfo>>();
-
-            ReportingYear = temp.ReportingYear;
-            ApiKey = temp.ApiKey;
         }
 
         protected IJ4JLogger<DataRetriever> Logger { get; }
         protected FppcFilingContext DbContext { get; }
-        protected string ApiKey { get; }
 
-        public List<SymbolInfo> Symbols { get; }
+        protected string ApiKey => _config?.ApiKey ?? "";
+
+        public List<SymbolInfo> Symbols
+        {
+            get
+            {
+                if( _symbols == null )
+                {
+                    if( _config != null )
+                    {
+                        if( !File.Exists( _config.PathToSecuritiesFile ) )
+                            Logger.Error($"Securities file '{_config.PathToSecuritiesFile}' does not exist"  );
+                        else _symbols = File.ReadAllText( _config.PathToSecuritiesFile )
+                            .FromCsv<List<SymbolInfo>>();
+                    }
+
+                    if( _symbols == null ) _symbols = new List<SymbolInfo>();
+                }
+
+                return _symbols;
+            }
+        }
+
+        public int ReportingYear => _config?.ReportingYear ?? -1;
         public int Index { get; private set; }
-        public int ReportingYear { get; }
+
+        public void Initialize( FppcFilingConfiguration config )
+        {
+            _config = config ?? throw new NullReferenceException( nameof(config) );
+            _symbols = null;    // force regeneration
+        }
 
         public void ProcessNextSymbol( object stateInfo )
         {
