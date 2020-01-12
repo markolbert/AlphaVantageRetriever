@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,7 +14,8 @@ namespace J4JSoftware.AlphaVantageRetriever
     {
         private readonly object _lockObject = new object();
         private FppcFilingConfiguration _config;
-        private List<SymbolInfo> _symbols;
+        private List<SecurityInfo> _securities;
+        private int _index = 0;
 
         public DataRetriever( 
             FppcFilingContext dbContext,
@@ -30,34 +30,14 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         protected string ApiKey => _config?.ApiKey ?? "";
 
-        public List<SymbolInfo> Symbols
-        {
-            get
-            {
-                if( _symbols == null )
-                {
-                    if( _config != null )
-                    {
-                        if( !File.Exists( _config.PathToSecuritiesFile ) )
-                            Logger.Error($"Securities file '{_config.PathToSecuritiesFile}' does not exist"  );
-                        else _symbols = File.ReadAllText( _config.PathToSecuritiesFile )
-                            .FromCsv<List<SymbolInfo>>();
-                    }
-
-                    if( _symbols == null ) _symbols = new List<SymbolInfo>();
-                }
-
-                return _symbols;
-            }
-        }
-
         public int ReportingYear => _config?.ReportingYear ?? -1;
-        public int Index { get; private set; }
 
         public void Initialize( FppcFilingConfiguration config )
         {
             _config = config ?? throw new NullReferenceException( nameof(config) );
-            _symbols = null;    // force regeneration
+
+            _securities = DbContext.Securities.ToList();
+            _index = 0;
         }
 
         public void ProcessNextSymbol( object stateInfo )
@@ -85,7 +65,8 @@ namespace J4JSoftware.AlphaVantageRetriever
         public void DeleteUnusedSecurities()
         {
             var toRemove = DbContext.Securities
-                .Where( s => Symbols.Select( x => x.Ticker ).All( t => t != s.Ticker ) )
+                .Include(x=>x.HistoricalData)
+                .Where( s => !s.HistoricalData.Any() )
                 .ToList();
 
             DbContext.RemoveRange(toRemove);
@@ -95,12 +76,6 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         protected void Process( AutoResetEvent jobDone )
         {
-            if( Index >= Symbols.Count )
-            {
-                jobDone.Set();
-                return;
-            }
-
             var mesg = new StringBuilder();
             SecurityInfo dbSecurity = null;
 
@@ -108,18 +83,24 @@ namespace J4JSoftware.AlphaVantageRetriever
             // is reportable, has a ticker and hasn't already had its data retrieved
             while( true )
             {
+                if( _index >= _securities.Count )
+                {
+                    jobDone.Set();
+                    return;
+                }
+
                 // the StringBuilder instance 'mesg', in addition to holding any error
                 // messages to report, is also the flag we use to tell that we've found
                 // a SymbolInfo to process. that's done by checking to see if there are
                 // no messages.
                 mesg.Clear();
 
-                bool reportable = Symbols[ Index ].Reportable;
+                dbSecurity = _securities[ _index ];
 
-                if( !reportable )
+                if( !dbSecurity.Reportable )
                     mesg.Append( "not reportable" );
 
-                bool emptyTicker = String.IsNullOrEmpty( Symbols[ Index ].Ticker );
+                bool emptyTicker = String.IsNullOrEmpty( dbSecurity.Ticker );
 
                 if( emptyTicker )
                 {
@@ -128,68 +109,14 @@ namespace J4JSoftware.AlphaVantageRetriever
                 }
                 else
                 {
-                    // check ticker
-                    var curSymbol = Symbols[ Index ];
-
-                    // see if security is in database
-                    dbSecurity = DbContext.Securities
-                        .Include( s => s.HistoricalData )
-                        .FirstOrDefault( s => s.Ticker == curSymbol.Ticker );
-
-                    if( dbSecurity != null )
-                    {
-                        dbSecurity.ErrorMessage = null;
-
-                        if( dbSecurity.RetrievedData )
-                        {
-                            if( reportable )
-                            {
-                                if( mesg.Length > 0 ) mesg.Append( "; " );
-                                mesg.Append( "already retrieved data" );
-                            }
-                            else
-                            {
-                                if( mesg.Length > 0 ) mesg.Append( "; " );
-                                mesg.Append( "retrieved data but no longer reportable; deleting retrieved data, removing security" );
-
-                                DbContext.RemoveRange( dbSecurity.HistoricalData );
-                                DbContext.Remove( dbSecurity );
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if( reportable )
-                        {
-                            dbSecurity = new SecurityInfo
-                            {
-                                Ticker = curSymbol.Ticker,
-                                Issuer = curSymbol.Issuer,
-                                Category = curSymbol.Category,
-                                Reportable = curSymbol.Reportable
-                            };
-
-                            DbContext.Securities.Add( dbSecurity );
-                        }
-                    }
+                    // if no message we've found a symbol to process
+                    if( mesg.Length == 0 ) break;
                 }
 
-                DbContext.SaveChanges();
-
-                // if no message we've found a symbol to process
-                if( mesg.Length == 0 ) break;
-
-                mesg.Insert( 0, $"{Symbols[ Index ].Issuer} " );
+                mesg.Insert( 0, $"{dbSecurity.Issuer} " );
                 Logger.Information( mesg.ToString() );
 
-                Index++;
-
-                // flag that we're done when we've exhausted the list of symbols
-                if( Index >= Symbols.Count )
-                {
-                    jobDone.Set();
-                    return;
-                }
+                _index++;
             }
 
             // retrieve historical price data
@@ -209,7 +136,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 DbContext.SaveChanges();
 
                 Logger.Error( $"Exception for {dbSecurity.Issuer}: {dbSecurity.ErrorMessage}" );
-                Index++;
+                _index++;
                 
                 return;
             }
@@ -233,7 +160,7 @@ namespace J4JSoftware.AlphaVantageRetriever
 
             DbContext.SaveChanges();
 
-            Index++;
+            _index++;
         }
     }
 }

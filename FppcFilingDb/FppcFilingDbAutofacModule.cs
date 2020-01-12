@@ -1,7 +1,4 @@
-﻿using System.IO;
-using Autofac;
-using J4JSoftware.FppcFiling;
-using Microsoft.EntityFrameworkCore;
+﻿using Autofac;
 
 namespace J4JSoftware.FppcFiling
 {

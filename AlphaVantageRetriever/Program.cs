@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using J4JSoftware.FppcFiling;
@@ -11,47 +10,46 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceStack;
-using ServiceStack.Text;
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
     // thanx to https://medium.com/@mark.holdt/alphavantage-and-c-1d560e690387 for the inspiration for this!
-    [Command(
-        Name="AlphaVantageRetriever", 
-        Description = "an app to retrieve stock ticker prices from AlphaVantage and export them in a format usable in FPPC filings"
-        )]
-    [RetrieveOrExport]
+    [ Command(
+        Name = "AlphaVantageRetriever",
+        Description =
+            "an app to retrieve stock ticker prices from AlphaVantage and export them in a format usable in FPPC filings"
+    ) ]
+    [ SingleCommandOption ]
     class Program
     {
         private static IJ4JLogger<Program> _logger;
         private static Timer _timer;
 
-        [Option("-r|--retrieve", "retrieve data from AlphaVantage",CommandOptionType.NoValue)]
+        [ Option( "-r|--retrieve", "retrieve data from AlphaVantage", CommandOptionType.NoValue ) ]
         internal bool Retrieve { get; set; }
 
-        [ExportToFileOption]
+        [ ExportToFileOption ] 
         internal string Export { get; set; }
 
-        [Option("-s|--securities","path to CSV file of securities to import", CommandOptionType.SingleValue)]
-        [FileExists]
+        [ UpdateSecurities ] 
         internal string PathToSecuritiesFile { get; set; }
 
-        [ Option( "-y|--year", "year (YYYY) to store", CommandOptionType.SingleValue ) ]
-        [ReportingYear]
+        [Option( "-y|--year", "year (YYYY) to store", CommandOptionType.SingleValue ) ]
+        [ ReportingYear ]
         internal int ReportingYear { get; set; }
 
         [ Option( "-c|--CallsPerMinute", "calls per minute to AlphaVantage site", CommandOptionType.SingleValue ) ]
-        [CallsPerMinute]
+        [ CallsPerMinute ]
         internal float CallsPerMinute { get; set; }
 
         private FppcFilingConfiguration Configuration { get; set; }
 
         static Task<int> Main( string[] args ) => CommandLineApplication.ExecuteAsync<Program>( args );
 
-        private async Task<int> OnExecuteAsync( 
+        private async Task<int> OnExecuteAsync(
             CommandLineApplication app,
-            CancellationToken cancellationToken = default 
-            )
+            CancellationToken cancellationToken = default
+        )
         {
             _logger = AppServiceProvider.Instance.GetRequiredService<IJ4JLogger<Program>>();
             Configuration = AppServiceProvider.Instance.GetRequiredService<FppcFilingConfiguration>();
@@ -62,14 +60,19 @@ namespace J4JSoftware.AlphaVantageRetriever
                 if( ReportingYear > 0 ) Configuration.ReportingYear = ReportingYear;
 
                 if( CallsPerMinute > 0 ) Configuration.CallsPerMinute = CallsPerMinute;
-                
-                if( !String.IsNullOrEmpty( PathToSecuritiesFile ) )
-                    Configuration.PathToSecuritiesFile = PathToSecuritiesFile;
 
                 return RetrieveDataFromAlphaVantage();
             }
 
-            if( !String.IsNullOrEmpty(Export) )
+            if( !String.IsNullOrEmpty( PathToSecuritiesFile ) )
+            {
+                if( PathToSecuritiesFile != "@" )
+                    Configuration.PathToSecuritiesFile = PathToSecuritiesFile;
+
+                return UpdateSecurities();
+            }
+
+            if( !String.IsNullOrEmpty( Export ) )
             {
                 return ExportDataToCSV();
             }
@@ -86,7 +89,9 @@ namespace J4JSoftware.AlphaVantageRetriever
             var jobDone = new AutoResetEvent( false );
 
             var interval = Convert.ToInt32( 60000 / Configuration.CallsPerMinute );
+
             var dataRetriever = AppServiceProvider.Instance.GetRequiredService<DataRetriever>();
+            dataRetriever.Initialize(Configuration);
 
             _logger.Information( "Job started" );
 
@@ -120,15 +125,15 @@ namespace J4JSoftware.AlphaVantageRetriever
 
             var fracDays = marketDays.Count / 10;
 
-            _logger.Information("Retrieving tickers...");
+            _logger.Information( "Retrieving tickers..." );
 
             var headers = dbContext.HistoricalData
-                .Select(hd=>hd.SecurityInfo.Ticker)
+                .Select( hd => hd.SecurityInfo.Ticker )
                 .Distinct()
                 .OrderBy( x => x )
                 .ToList();
 
-            var prevDayHigh = headers.ToDictionary( x => x, x => 0.0M );
+            var prevHighs = new Dictionary<string, decimal>();
 
             try
             {
@@ -143,18 +148,34 @@ namespace J4JSoftware.AlphaVantageRetriever
 
                 foreach( var marketDay in marketDays )
                 {
-                    var dayHigh = dbContext.HistoricalData
-                        .Where(hd=>hd.Timestamp == marketDay  )
+                    var highs = dbContext.HistoricalData
+                        .Where( hd => hd.Timestamp == marketDay )
                         .Select( hd => new { hd.SecurityInfo.Ticker, hd.High } )
                         .ToDictionary( x => x.Ticker, x => x.High );
 
                     outputFile.Write( marketDay.ToShortDateString() );
 
-                    headers.ForEach( h =>
+                    foreach( var curHeader in headers )
                     {
-                        var high = dayHigh.ContainsKey( h ) ? dayHigh[ h ] : prevDayHigh[ h ];
-                        outputFile.Write( $", {high}" );
-                    } );
+                        decimal toWrite = 0;
+
+                        if( highs.ContainsKey( curHeader ) )
+                        {
+                            toWrite = highs[ curHeader ];
+
+                            if( prevHighs.ContainsKey( curHeader ) )
+                                prevHighs[ curHeader ] = highs[ curHeader ];
+                            else
+                                prevHighs.Add( curHeader, highs[ curHeader ] );
+                        }
+                        else
+                        {
+                            if( prevHighs.ContainsKey( curHeader ) )
+                                toWrite = prevHighs[ curHeader ];
+                        }
+
+                        outputFile.Write( $", {toWrite}" );
+                    }
 
                     outputFile.WriteLine();
 
@@ -166,7 +187,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                         _logger.Information( $"{10 * chunksOutput}% written..." );
                     }
 
-                    prevDayHigh = dayHigh;
+                    prevHighs = highs;
                 }
 
                 outputFile.Flush();
@@ -179,6 +200,48 @@ namespace J4JSoftware.AlphaVantageRetriever
             }
 
             _logger.Information( "Export completed" );
+
+            return 0;
+        }
+
+        private int UpdateSecurities()
+        {
+            if( !File.Exists( Configuration.PathToSecuritiesFile ) )
+            {
+                _logger.Error( $"Securities file '{Configuration.PathToSecuritiesFile}' does not exist" );
+
+                return -1;
+            }
+
+            var symbols = File.ReadAllText( Configuration.PathToSecuritiesFile )
+                .FromCsv<List<SymbolInfo>>();
+
+            var dbContext = AppServiceProvider.Instance.GetRequiredService<FppcFilingContext>();
+
+            foreach( var curSymbol in symbols )
+            {
+                // see if security is in database
+                var dbSecurity = dbContext.Securities
+                    .Include( s => s.HistoricalData )
+                    .FirstOrDefault( s => s.Cusip == curSymbol.Cusip );
+
+                if( dbSecurity == null )
+                {
+                    dbSecurity = new SecurityInfo
+                    {
+                        Cusip = curSymbol.Cusip
+                    };
+
+                    dbContext.Securities.Add( dbSecurity );
+                }
+
+                dbSecurity.Reportable = curSymbol.Reportable;
+                dbSecurity.Category = curSymbol.Category;
+                dbSecurity.Issuer = curSymbol.Issuer;
+                dbSecurity.Ticker = curSymbol.Ticker;
+            }
+
+            dbContext.SaveChanges();
 
             return 0;
         }

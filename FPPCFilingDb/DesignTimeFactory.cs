@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using J4JSoftware.FppcFiling;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace J4JSoftware.FppcFiling

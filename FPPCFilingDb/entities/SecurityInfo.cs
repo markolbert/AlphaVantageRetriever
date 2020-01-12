@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace J4JSoftware.FppcFiling
@@ -10,6 +8,7 @@ namespace J4JSoftware.FppcFiling
     {
         public int ID { get; set; }
         public string Issuer { get; set; }
+        public string Cusip { get; set; }
         public string Ticker { get; set; }
         public string Category { get; set; }
         public bool Reportable { get; set; }
@@ -28,7 +27,7 @@ namespace J4JSoftware.FppcFiling
             builder.HasIndex( x => x.Issuer )
                 .IsUnique();
 
-            builder.HasIndex( x => x.Ticker )
+            builder.HasIndex( x => x.Cusip )
                 .IsUnique();
         }
     }

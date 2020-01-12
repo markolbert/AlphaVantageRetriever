@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using J4JSoftware.FppcFiling;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 

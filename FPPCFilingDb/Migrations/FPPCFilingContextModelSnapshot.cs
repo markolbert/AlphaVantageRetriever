@@ -53,6 +53,9 @@ namespace J4JSoftware.FppcFiling.Migrations
                     b.Property<string>("Category")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Cusip")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("TEXT");
 
@@ -70,10 +73,10 @@ namespace J4JSoftware.FppcFiling.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("Issuer")
+                    b.HasIndex("Cusip")
                         .IsUnique();
 
-                    b.HasIndex("Ticker")
+                    b.HasIndex("Issuer")
                         .IsUnique();
 
                     b.ToTable("Securities");
