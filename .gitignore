@@ -5,7 +5,7 @@
 
 # User-specific files and directories
 Migrations/
-FPPCFiling.db
+*.db
 *.rsuser
 *.suo
 *.user
