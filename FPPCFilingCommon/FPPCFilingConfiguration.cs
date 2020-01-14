@@ -14,6 +14,7 @@ namespace J4JSoftware.FppcFiling
 
         public string ApiKey { get; set; }
         public string PathToSecuritiesFile { get; set; }
+        public string PathToPriceFile { get; set; }
         public int ReportingYear { get; set; }
         public float CallsPerMinute { get; set; }
 

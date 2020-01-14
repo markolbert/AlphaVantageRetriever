@@ -14,8 +14,9 @@ namespace J4JSoftware.AlphaVantageRetriever
     {
         private readonly object _lockObject = new object();
         private FppcFilingConfiguration _config;
-        private List<SecurityInfo> _securities;
+        private List<FppcFiling.SecurityInfo> _securities;
         private int _index = 0;
+        private bool _replaceExistingPriceData;
 
         public DataRetriever( 
             FppcFilingContext dbContext,
@@ -32,12 +33,13 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         public int ReportingYear => _config?.ReportingYear ?? -1;
 
-        public void Initialize( FppcFilingConfiguration config )
+        public void Initialize( FppcFilingConfiguration config, bool replaceExistingPriceData )
         {
             _config = config ?? throw new NullReferenceException( nameof(config) );
 
             _securities = DbContext.Securities.ToList();
             _index = 0;
+            _replaceExistingPriceData = replaceExistingPriceData;
         }
 
         public void ProcessNextSymbol( object stateInfo )
@@ -62,24 +64,12 @@ namespace J4JSoftware.AlphaVantageRetriever
             }
         }
 
-        public void DeleteUnusedSecurities()
-        {
-            var toRemove = DbContext.Securities
-                .Include(x=>x.HistoricalData)
-                .Where( s => !s.HistoricalData.Any() )
-                .ToList();
-
-            DbContext.RemoveRange(toRemove);
-
-            DbContext.SaveChanges();
-        }
-
         protected void Process( AutoResetEvent jobDone )
         {
             var mesg = new StringBuilder();
-            SecurityInfo dbSecurity = null;
+            FppcFiling.SecurityInfo dbSecurity = null;
 
-            // scan through all the SymbolInfo objects looking for the next one that
+            // scan through all the SecurityInfo objects looking for the next one that
             // is reportable, has a ticker and hasn't already had its data retrieved
             while( true )
             {
@@ -91,7 +81,7 @@ namespace J4JSoftware.AlphaVantageRetriever
 
                 // the StringBuilder instance 'mesg', in addition to holding any error
                 // messages to report, is also the flag we use to tell that we've found
-                // a SymbolInfo to process. that's done by checking to see if there are
+                // a SecurityInfo to process. that's done by checking to see if there are
                 // no messages.
                 mesg.Clear();
 
@@ -107,11 +97,15 @@ namespace J4JSoftware.AlphaVantageRetriever
                     if( mesg.Length > 0 ) mesg.Append( "; " );
                     mesg.Append( "has no ticker symbol" );
                 }
-                else
+
+                if( dbSecurity.RetrievedData && _replaceExistingPriceData )
                 {
-                    // if no message we've found a symbol to process
-                    if( mesg.Length == 0 ) break;
+                    if( mesg.Length > 0 ) mesg.Append( "; " );
+                    mesg.Append( "price data already retrieved" );
                 }
+
+                // if no message we've found a symbol to process
+                if( mesg.Length == 0 ) break;
 
                 mesg.Insert( 0, $"{dbSecurity.Issuer} " );
                 Logger.Information( mesg.ToString() );

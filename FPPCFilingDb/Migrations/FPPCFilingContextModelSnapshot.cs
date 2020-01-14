@@ -50,7 +50,7 @@ namespace J4JSoftware.FppcFiling.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
+                    b.Property<string>("ClassSeries")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Cusip")
@@ -68,15 +68,18 @@ namespace J4JSoftware.FppcFiling.Migrations
                     b.Property<bool>("RetrievedData")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("SecurityName")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Ticker")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ID");
 
                     b.HasIndex("Cusip")
-                        .IsUnique();
-
-                    b.HasIndex("Issuer")
                         .IsUnique();
 
                     b.ToTable("Securities");

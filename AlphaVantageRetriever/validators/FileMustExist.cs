@@ -9,7 +9,7 @@ namespace J4JSoftware.AlphaVantageRetriever
     {
         public ValidationResult GetValidationResult( CommandOption option, ValidationContext context )
         {
-            if( !option.HasValue()) return ValidationResult.Success;
+            if( !option.HasValue() || ( option.Value() == null ) ) return ValidationResult.Success;
 
             if( !File.Exists(option.Value()) )
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using J4JSoftware.FppcFiling;
@@ -13,7 +14,6 @@ using ServiceStack;
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
-    // thanx to https://medium.com/@mark.holdt/alphavantage-and-c-1d560e690387 for the inspiration for this!
     [ Command(
         Name = "AlphaVantageRetriever",
         Description =
@@ -25,11 +25,14 @@ namespace J4JSoftware.AlphaVantageRetriever
         private static IJ4JLogger<Program> _logger;
         private static Timer _timer;
 
-        [ Option( "-r|--retrieve", "retrieve data from AlphaVantage", CommandOptionType.NoValue ) ]
+        [ Option( "-g|--get", "get data from AlphaVantage", CommandOptionType.NoValue ) ]
         internal bool Retrieve { get; set; }
 
-        [ ExportToFileOption ] 
-        internal string Export { get; set; }
+        [Option( "-r|--replace", "replace existing data", CommandOptionType.NoValue )]
+        internal bool ReplaceExistingData { get; set; }
+
+        [ExportToFileOption ] 
+        internal string PathToPriceFile { get; set; }
 
         [ UpdateSecurities ] 
         internal string PathToSecuritiesFile { get; set; }
@@ -56,23 +59,15 @@ namespace J4JSoftware.AlphaVantageRetriever
 
             if( Retrieve )
             {
-                // update from command line arguments, if specified
-                if( ReportingYear > 0 ) Configuration.ReportingYear = ReportingYear;
-
-                if( CallsPerMinute > 0 ) Configuration.CallsPerMinute = CallsPerMinute;
-
                 return RetrieveDataFromAlphaVantage();
             }
 
             if( !String.IsNullOrEmpty( PathToSecuritiesFile ) )
             {
-                if( PathToSecuritiesFile != "@" )
-                    Configuration.PathToSecuritiesFile = PathToSecuritiesFile;
-
                 return UpdateSecurities();
             }
 
-            if( !String.IsNullOrEmpty( Export ) )
+            if( !String.IsNullOrEmpty( PathToPriceFile ) )
             {
                 return ExportDataToCSV();
             }
@@ -84,27 +79,41 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         private int RetrieveDataFromAlphaVantage()
         {
+            // update from command line arguments, if specified
+            if( ReportingYear > 0 )
+                Configuration.ReportingYear = ReportingYear;
+
+            if( CallsPerMinute > 0 )
+                Configuration.CallsPerMinute = CallsPerMinute;
+
             // this AutoResetEvent is 'shared' by the calling method and the data retrieval method
-            // and is used to indicate when all available SymbolInfo objects have been processed
+            // and is used to indicate when all available SecurityInfo objects have been processed
             var jobDone = new AutoResetEvent( false );
 
             var interval = Convert.ToInt32( 60000 / Configuration.CallsPerMinute );
 
             var dataRetriever = AppServiceProvider.Instance.GetRequiredService<DataRetriever>();
-            dataRetriever.Initialize(Configuration);
+            dataRetriever.Initialize(Configuration, ReplaceExistingData);
 
-            _logger.Information( "Job started" );
+            var sb = new StringBuilder();
+            
+            sb.Append( $"Starting AlphaVantage extraction for {Configuration.ReportingYear} ({Configuration.CallsPerMinute} queries per minute, " );
+            
+            sb.Append( ReplaceExistingData
+                ? "replace existing price data)..."
+                : "skip securities with price data on file)..." );
+
+            if( !ConfirmAction( sb.ToString() ) )
+            {
+                _logger.Information("Operation canceled");
+                return -1;
+            }
 
             // this creates the timer and starts it running
             _timer = new Timer( dataRetriever.ProcessNextSymbol, jobDone, 0, interval );
 
             // wait until the processing is done
             jobDone.WaitOne();
-
-            // now delete any securities from the database that aren't in the symbols file
-            _logger.Information( "Deleting unneeded securities from database" );
-
-            dataRetriever.DeleteUnusedSecurities();
 
             _logger.Information( "Job finished" );
 
@@ -113,6 +122,21 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         private int ExportDataToCSV()
         {
+            if( PathToPriceFile != "@" )
+                Configuration.PathToPriceFile = PathToPriceFile;
+
+            if( String.IsNullOrEmpty( Configuration.PathToPriceFile ) )
+                Configuration.PathToPriceFile = $"{Configuration.ReportingYear} {ExportToFileOptionAttribute.DefaultPathStub}";
+
+            if( !MustBeValidFilePath.ValidatePath( Configuration.PathToPriceFile ) )
+            {
+                _logger.Error($"Export file '{Configuration.PathToPriceFile}' is invalid");
+
+                return -1;
+            }
+
+            _logger.Information("Starting export of price data to CSV file...");
+
             var dbContext = AppServiceProvider.Instance.GetRequiredService<FppcFilingContext>();
 
             _logger.Information( "Retrieving market days..." );
@@ -120,15 +144,16 @@ namespace J4JSoftware.AlphaVantageRetriever
             var marketDays = dbContext.HistoricalData
                 .Select( hd => hd.Timestamp )
                 .Distinct()
-                .OrderBy( x => x )
+                .OrderByDescending( x => x )
                 .ToList();
 
             var fracDays = marketDays.Count / 10;
 
-            _logger.Information( "Retrieving tickers..." );
+            _logger.Information( "Retrieving CUSIPs..." );
 
-            var headers = dbContext.HistoricalData
-                .Select( hd => hd.SecurityInfo.Ticker )
+            var headers = dbContext.Securities
+                .Where(s=>s.Reportable  )
+                .Select( s => s.Cusip )
                 .Distinct()
                 .OrderBy( x => x )
                 .ToList();
@@ -137,7 +162,7 @@ namespace J4JSoftware.AlphaVantageRetriever
 
             try
             {
-                var outputFile = File.CreateText( Export );
+                var outputFile = File.CreateText( Configuration.PathToPriceFile );
 
                 outputFile.Write( "Date" );
                 headers.ForEach( h => outputFile.Write( $",{h}" ) );
@@ -150,8 +175,8 @@ namespace J4JSoftware.AlphaVantageRetriever
                 {
                     var highs = dbContext.HistoricalData
                         .Where( hd => hd.Timestamp == marketDay )
-                        .Select( hd => new { hd.SecurityInfo.Ticker, hd.High } )
-                        .ToDictionary( x => x.Ticker, x => x.High );
+                        .Select( hd => new { hd.SecurityInfo.Cusip, hd.High } )
+                        .ToDictionary( x => x.Cusip, x => x.High );
 
                     outputFile.Write( marketDay.ToShortDateString() );
 
@@ -206,6 +231,9 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         private int UpdateSecurities()
         {
+            if( PathToSecuritiesFile != "@" )
+                Configuration.PathToSecuritiesFile = PathToSecuritiesFile;
+
             if( !File.Exists( Configuration.PathToSecuritiesFile ) )
             {
                 _logger.Error( $"Securities file '{Configuration.PathToSecuritiesFile}' does not exist" );
@@ -213,10 +241,38 @@ namespace J4JSoftware.AlphaVantageRetriever
                 return -1;
             }
 
+            var sb = new StringBuilder();
+
+            sb.Append( "Starting securities update (" );
+            sb.Append( ReplaceExistingData ? "erase existing data)..." : "retain existing data)..." );
+
+            if( !ConfirmAction( sb.ToString() ) )
+            {
+                _logger.Information( "Operation canceled" );
+                return -1;
+            }
+
+            _logger.Information("Reading securities file...");
+
             var symbols = File.ReadAllText( Configuration.PathToSecuritiesFile )
-                .FromCsv<List<SymbolInfo>>();
+                .FromCsv<List<ImportedSecurityInfo>>();
+
+            // check to ensure all cusips defined
+            if( symbols.Any( s => String.IsNullOrEmpty( s.Cusip ) ) )
+            {
+                _logger.Error( "There are blank or undefined CUSIP numbers in the file. Please correct them." );
+                return -1;
+            }
 
             var dbContext = AppServiceProvider.Instance.GetRequiredService<FppcFilingContext>();
+
+            if( ReplaceExistingData )
+            {
+                _logger.Information( "Removing existing data..." );
+
+                dbContext.HistoricalData.FromSqlRaw( "truncate table HistoricalData" );
+                dbContext.Securities.FromSqlRaw( "truncate table Securities" );
+            }
 
             foreach( var curSymbol in symbols )
             {
@@ -227,23 +283,42 @@ namespace J4JSoftware.AlphaVantageRetriever
 
                 if( dbSecurity == null )
                 {
-                    dbSecurity = new SecurityInfo
+                    dbSecurity = new FppcFiling.SecurityInfo
                     {
                         Cusip = curSymbol.Cusip
                     };
 
                     dbContext.Securities.Add( dbSecurity );
-                }
 
-                dbSecurity.Reportable = curSymbol.Reportable;
-                dbSecurity.Category = curSymbol.Category;
+                    _logger.Information( $"Added {curSymbol.SecurityName}" );
+                }
+                else
+                    _logger.Information( $"Updated {curSymbol.SecurityName}" );
+
+                dbSecurity.SecurityName = curSymbol.SecurityName;
+                dbSecurity.Type = curSymbol.Type;
                 dbSecurity.Issuer = curSymbol.Issuer;
+                dbSecurity.ClassSeries = curSymbol.ClassSeries;
+                dbSecurity.Reportable = curSymbol.Reportable;
                 dbSecurity.Ticker = curSymbol.Ticker;
             }
 
             dbContext.SaveChanges();
 
+            _logger.Information( "Securities update completed" );
+
             return 0;
+        }
+
+        private bool ConfirmAction( string mesg )
+        {
+            Console.WriteLine($"{mesg}\n");
+
+            Console.Write("Press Y or y to continue:");
+            var key = Console.ReadKey().Key;
+            Console.WriteLine();
+
+            return key == ConsoleKey.Y;
         }
     }
 }

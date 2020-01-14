@@ -12,7 +12,9 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
             if( !option.HasValue()) return ValidationResult.Success;
 
-            if( !ValidatePath( option.Value() ?? ExportToFileOptionAttribute.DefaultPath ) )
+            var filePath = option.Value();
+
+            if( filePath != null && !MustBeValidFilePath.ValidatePath( filePath ) )
             {
                 return new ValidationResult( $"The path '{option.Value()}' is invalid" );
             }
@@ -20,7 +22,7 @@ namespace J4JSoftware.AlphaVantageRetriever
             return ValidationResult.Success;
         }
         
-        private bool ValidatePath( string filePath )
+        public static bool ValidatePath( string filePath )
         {
             // check to see if file exists
             if( File.Exists( filePath ) ) return true;

@@ -8,7 +8,7 @@ namespace J4JSoftware.AlphaVantageRetriever
     [AttributeUsage(AttributeTargets.Property)]
     public class ExportToFileOptionAttribute : Attribute, IMemberConvention
     {
-        public const string DefaultPath = "Fppc Pricing Data.csv";
+        public const string DefaultPathStub = "Fitch Trust Pricing Data.csv";
 
         public void Apply( ConventionContext context, MemberInfo member )
         {
@@ -22,10 +22,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 context.Application.OnParsingComplete( x =>
                 {
                     if( opt.HasValue() )
-                    {
-                        var value = opt.Value() ?? DefaultPath;
-                        property.SetValue( context.ModelAccessor.GetModel(), value );
-                    }
+                        property.SetValue( context.ModelAccessor.GetModel(), opt.Value() ?? "@" );
                 } );
             }
         }
