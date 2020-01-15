@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils.Validation;
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
@@ -16,17 +20,25 @@ namespace J4JSoftware.AlphaVantageRetriever
                 cmdOptions += program.PathToPriceFile != null ? 1 : 0;
                 cmdOptions += !String.IsNullOrEmpty( program.PathToSecuritiesFile ) ? 1 : 0;
 
+                string mesg = null;
+
                 switch( cmdOptions )
                 {
                     case 0:
-                        return new ValidationResult("You must specify one of -g|--get, -x|--export or -u|--update");
+                        mesg = "You must specify one of -g|--get, -x|--export or -u|--update";
+                        //return new ValidationResult( "You must specify one of -g|--get, -x|--export or -u|--update" );
+                        break;
 
                     case 1:
                         return ValidationResult.Success;
 
                     default:
-                        return new ValidationResult( "You can only specify one of -g|--get, -x|--export or -u|--update" );
+                        mesg = "You can only specify one of -g|--get, -x|--export or -u|--update";
+                        //return new ValidationResult( "You can only specify one of -g|--get, -x|--export or -u|--update" );
+                        break;
                 }
+
+                return new ValidationResult(mesg);
             }
 
             return ValidationResult.Success;

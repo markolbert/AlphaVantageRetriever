@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 using J4JSoftware.FppcFiling;
 using J4JSoftware.Logging;
 using McMaster.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils.HelpText;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceStack;
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
-    [ Command(
+    [Command(
         Name = "AlphaVantageRetriever",
         Description =
-            "an app to retrieve stock ticker prices from AlphaVantage and export them in a format usable in FPPC filings"
-    ) ]
-    [ SingleCommandOption ]
+            "an app to retrieve stock ticker prices from AlphaVantage and export them in a tabular format"
+    )]
+    [SingleCommandOption]
     class Program
     {
         private static IJ4JLogger<Program> _logger;
@@ -28,26 +29,26 @@ namespace J4JSoftware.AlphaVantageRetriever
         [ Option( "-g|--get", "get data from AlphaVantage", CommandOptionType.NoValue ) ]
         internal bool Retrieve { get; set; }
 
-        [Option( "-r|--replace", "replace existing data", CommandOptionType.NoValue )]
+        [Option( "-r|--replace", "replace existing data (only applies to -g|--get and -u|--update)", CommandOptionType.NoValue )]
         internal bool ReplaceExistingData { get; set; }
 
-        [ExportToFileOption ] 
+        [ ExportToFileOption ]
         internal string PathToPriceFile { get; set; }
 
         [ UpdateSecurities ] 
         internal string PathToSecuritiesFile { get; set; }
 
-        [Option( "-y|--year", "year (YYYY) to store", CommandOptionType.SingleValue ) ]
+        [Option( "-y|--year", "year (YYYY) to store (only applies to -g|--get)", CommandOptionType.SingleValue ) ]
         [ ReportingYear ]
         internal int ReportingYear { get; set; }
 
-        [ Option( "-c|--CallsPerMinute", "calls per minute to AlphaVantage site", CommandOptionType.SingleValue ) ]
+        [ Option( "-c|--CallsPerMinute", "calls per minute to AlphaVantage site (only applies to -g|--get)", CommandOptionType.SingleValue ) ]
         [ CallsPerMinute ]
         internal float CallsPerMinute { get; set; }
 
         private FppcFilingConfiguration Configuration { get; set; }
 
-        static Task<int> Main( string[] args ) => CommandLineApplication.ExecuteAsync<Program>( args );
+        private static async Task<int> Main( string[] args )=>await CommandLineApplication.ExecuteAsync<Program>( args );
 
         private async Task<int> OnExecuteAsync(
             CommandLineApplication app,
@@ -233,6 +234,11 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
             if( PathToSecuritiesFile != "@" )
                 Configuration.PathToSecuritiesFile = PathToSecuritiesFile;
+            else
+            {
+                if( String.IsNullOrEmpty( Configuration.PathToSecuritiesFile ) )
+                    Configuration.PathToSecuritiesFile = UpdateSecuritiesAttribute.DefaultPath;
+            }
 
             if( !File.Exists( Configuration.PathToSecuritiesFile ) )
             {
