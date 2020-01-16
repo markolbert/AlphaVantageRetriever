@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using J4JSoftware.FppcFiling;
+using J4JSoftware.AlphaVantageRetriever;
 using J4JSoftware.Logging;
 using McMaster.Extensions.CommandLineUtils;
-using McMaster.Extensions.CommandLineUtils.HelpText;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceStack;
+using SecurityInfo = J4JSoftware.AlphaVantageRetriever.SecurityInfo;
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
@@ -42,11 +42,14 @@ namespace J4JSoftware.AlphaVantageRetriever
         [ ReportingYear ]
         internal int ReportingYear { get; set; }
 
-        [ Option( "-c|--CallsPerMinute", "calls per minute to AlphaVantage site (only applies to -g|--get)", CommandOptionType.SingleValue ) ]
+        [ Option( "-c|--calls", "calls per minute to AlphaVantage site (only applies to -g|--get)", CommandOptionType.SingleValue ) ]
         [ CallsPerMinute ]
         internal float CallsPerMinute { get; set; }
 
-        private FppcFilingConfiguration Configuration { get; set; }
+        [Option( "-k|--key", "your AlphaVantage API key", CommandOptionType.SingleValue )]
+        internal string AlphaVantageKey { get; set; }
+
+        private AppConfiguration Configuration { get; set; }
 
         private static async Task<int> Main( string[] args )=>await CommandLineApplication.ExecuteAsync<Program>( args );
 
@@ -56,7 +59,7 @@ namespace J4JSoftware.AlphaVantageRetriever
         )
         {
             _logger = AppServiceProvider.Instance.GetRequiredService<IJ4JLogger<Program>>();
-            Configuration = AppServiceProvider.Instance.GetRequiredService<FppcFilingConfiguration>();
+            Configuration = AppServiceProvider.Instance.GetRequiredService<AppConfiguration>();
 
             if( Retrieve )
             {
@@ -84,8 +87,21 @@ namespace J4JSoftware.AlphaVantageRetriever
             if( ReportingYear > 0 )
                 Configuration.ReportingYear = ReportingYear;
 
+            if( Configuration.ReportingYear <= 0 )
+            {
+                _logger.Error("the reporting year is undefined");
+
+                return -1;
+            }
+
             if( CallsPerMinute > 0 )
                 Configuration.CallsPerMinute = CallsPerMinute;
+
+            if( Configuration.CallsPerMinute <= 0 )
+                Configuration.CallsPerMinute = 4.5F;
+
+            if( !String.IsNullOrEmpty( AlphaVantageKey ) )
+                Configuration.ApiKey = AlphaVantageKey;
 
             // this AutoResetEvent is 'shared' by the calling method and the data retrieval method
             // and is used to indicate when all available SecurityInfo objects have been processed
@@ -126,8 +142,20 @@ namespace J4JSoftware.AlphaVantageRetriever
             if( PathToPriceFile != "@" )
                 Configuration.PathToPriceFile = PathToPriceFile;
 
+            _logger.Information( "Starting export of price data to CSV file..." );
+
+            var dbContext = AppServiceProvider.Instance.GetRequiredService<AlphaVantageContext>();
+
             if( String.IsNullOrEmpty( Configuration.PathToPriceFile ) )
-                Configuration.PathToPriceFile = $"{Configuration.ReportingYear} {ExportToFileOptionAttribute.DefaultPathStub}";
+            {
+                var reportingYear = dbContext.HistoricalData
+                    .Select( hd => hd.Timestamp.Year )
+                    .FirstOrDefault();
+
+                if( reportingYear == 0 ) reportingYear = DateTime.Today.Year;
+
+                Configuration.PathToPriceFile = $"{reportingYear} {ExportToFileOptionAttribute.DefaultPathStub}";
+            }
 
             if( !MustBeValidFilePath.ValidatePath( Configuration.PathToPriceFile ) )
             {
@@ -135,10 +163,6 @@ namespace J4JSoftware.AlphaVantageRetriever
 
                 return -1;
             }
-
-            _logger.Information("Starting export of price data to CSV file...");
-
-            var dbContext = AppServiceProvider.Instance.GetRequiredService<FppcFilingContext>();
 
             _logger.Information( "Retrieving market days..." );
 
@@ -270,7 +294,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 return -1;
             }
 
-            var dbContext = AppServiceProvider.Instance.GetRequiredService<FppcFilingContext>();
+            var dbContext = AppServiceProvider.Instance.GetRequiredService<AlphaVantageContext>();
 
             if( ReplaceExistingData )
             {
@@ -289,7 +313,7 @@ namespace J4JSoftware.AlphaVantageRetriever
 
                 if( dbSecurity == null )
                 {
-                    dbSecurity = new FppcFiling.SecurityInfo
+                    dbSecurity = new SecurityInfo
                     {
                         Cusip = curSymbol.Cusip
                     };

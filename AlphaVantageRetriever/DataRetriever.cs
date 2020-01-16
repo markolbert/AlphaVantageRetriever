@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using J4JSoftware.FppcFiling;
+using J4JSoftware.AlphaVantageRetriever;
 using J4JSoftware.Logging;
-using Microsoft.EntityFrameworkCore;
 using ServiceStack;
+using HistoricalData = J4JSoftware.AlphaVantageRetriever.HistoricalData;
+using SecurityInfo = J4JSoftware.AlphaVantageRetriever.SecurityInfo;
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
     public class DataRetriever
     {
         private readonly object _lockObject = new object();
-        private FppcFilingConfiguration _config;
-        private List<FppcFiling.SecurityInfo> _securities;
+        private AppConfiguration _config;
+        private List<SecurityInfo> _securities;
         private int _index = 0;
         private bool _replaceExistingPriceData;
 
         public DataRetriever( 
-            FppcFilingContext dbContext,
+            AlphaVantageContext dbContext,
             IJ4JLogger<DataRetriever> logger )
         {
             DbContext = dbContext ?? throw new NullReferenceException( nameof(dbContext) );
@@ -27,13 +28,13 @@ namespace J4JSoftware.AlphaVantageRetriever
         }
 
         protected IJ4JLogger<DataRetriever> Logger { get; }
-        protected FppcFilingContext DbContext { get; }
+        protected AlphaVantageContext DbContext { get; }
 
         protected string ApiKey => _config?.ApiKey ?? "";
 
         public int ReportingYear => _config?.ReportingYear ?? -1;
 
-        public void Initialize( FppcFilingConfiguration config, bool replaceExistingPriceData )
+        public void Initialize( AppConfiguration config, bool replaceExistingPriceData )
         {
             _config = config ?? throw new NullReferenceException( nameof(config) );
 
@@ -67,7 +68,7 @@ namespace J4JSoftware.AlphaVantageRetriever
         protected void Process( AutoResetEvent jobDone )
         {
             var mesg = new StringBuilder();
-            FppcFiling.SecurityInfo dbSecurity = null;
+            SecurityInfo dbSecurity = null;
 
             // scan through all the SecurityInfo objects looking for the next one that
             // is reportable, has a ticker and hasn't already had its data retrieved

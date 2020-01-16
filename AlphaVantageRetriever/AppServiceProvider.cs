@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using J4JSoftware.FppcFiling;
+using J4JSoftware.AlphaVantageRetriever;
 using J4JSoftware.Logging;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -18,16 +18,23 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterModule<FppcFilingDbAutofacModule>();
+            builder.Register<AlphaVantageContext>( ( c, p ) =>
+                {
+                    var config = c.Resolve<AppConfiguration>();
 
-            builder.Register<FppcFilingConfiguration>( ( c, p ) =>
+                    return new AlphaVantageContext( config );
+                } )
+                .AsSelf()
+                .SingleInstance();
+
+            builder.Register<AppConfiguration>( ( c, p ) =>
                  {
                      var retVal = new ConfigurationBuilder()
                          .SetBasePath( Environment.CurrentDirectory )
                          .AddUserSecrets<Program>()
                          .AddJsonFile( "configInfo.json" )
                          .Build()
-                         .Get<FppcFilingConfiguration>();
+                         .Get<AppConfiguration>();
 
                      return retVal;
                  } )
@@ -35,7 +42,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 .SingleInstance();
 
             builder.Register<IJ4JLoggerConfiguration>(
-                ( c, p ) => c.Resolve<FppcFilingConfiguration>().Logger );
+                ( c, p ) => c.Resolve<AppConfiguration>().Logger );
 
             builder.Register<ILogger>( ( c, p ) =>
                  {

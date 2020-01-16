@@ -16,7 +16,7 @@ namespace J4JSoftware.AlphaVantageRetriever
             {
                 var opt = context.Application.Option( 
                     "-x|--export",
-                    $"export data from database to CSV file (default is '<reporting year> {DefaultPathStub}'",
+                    $"export data from database to CSV file (default is '<reporting year|current year> {DefaultPathStub}'",
                     CommandOptionType.SingleOrNoValue );
 
                 opt.Validators.Add( new MustBeValidFilePath() );
