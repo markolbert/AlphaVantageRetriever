@@ -23,7 +23,7 @@ namespace J4JSoftware.AlphaVantageRetriever
     [SingleCommandOption]
     class Program
     {
-        private static IJ4JLogger<Program> _logger;
+        private static IJ4JLogger _logger;
         private static Timer _timer;
 
         [ Option( "-g|--get", "get data from AlphaVantage", CommandOptionType.NoValue ) ]
@@ -58,7 +58,9 @@ namespace J4JSoftware.AlphaVantageRetriever
             CancellationToken cancellationToken = default
         )
         {
-            _logger = AppServiceProvider.Instance.GetRequiredService<IJ4JLogger<Program>>();
+            var loggerFactory = AppServiceProvider.Instance.GetRequiredService<IJ4JLoggerFactory>();
+
+            _logger = loggerFactory.CreateLogger( GetType() );
             Configuration = AppServiceProvider.Instance.GetRequiredService<AppConfiguration>();
 
             if( Retrieve )

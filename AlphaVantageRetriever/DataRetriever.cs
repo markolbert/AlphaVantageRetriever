@@ -21,13 +21,14 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         public DataRetriever( 
             AlphaVantageContext dbContext,
-            IJ4JLogger<DataRetriever> logger )
+            IJ4JLoggerFactory loggerFactory )
         {
             DbContext = dbContext ?? throw new NullReferenceException( nameof(dbContext) );
-            Logger = logger ?? throw new NullReferenceException( nameof(logger) );
+            Logger = loggerFactory?.CreateLogger(this.GetType()) 
+                     ?? throw new NullReferenceException( nameof(loggerFactory) );
         }
 
-        protected IJ4JLogger<DataRetriever> Logger { get; }
+        protected IJ4JLogger Logger { get; }
         protected AlphaVantageContext DbContext { get; }
 
         protected string ApiKey => _config?.ApiKey ?? "";
