@@ -24,6 +24,6 @@ namespace J4JSoftware.AlphaVantageRetriever
             set => _dbPath = value;
         }
 
-        public J4JLoggerConfiguration Logger { get; set; }
+        //public J4JLoggerConfiguration Logger { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using J4JSoftware.AlphaVantageRetriever;
+using AutoFacJ4JLogging;
 using J4JSoftware.Logging;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -18,7 +18,7 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
             var builder = new ContainerBuilder();
 
-            builder.Register<AlphaVantageContext>( ( c, p ) =>
+            builder.Register( ( c, p ) =>
                 {
                     var config = c.Resolve<AppConfiguration>();
 
@@ -27,42 +27,36 @@ namespace J4JSoftware.AlphaVantageRetriever
                 .AsSelf()
                 .SingleInstance();
 
-            builder.Register<AppConfiguration>( ( c, p ) =>
-                 {
-                     var retVal = new ConfigurationBuilder()
-                         .SetBasePath( Environment.CurrentDirectory )
-                         .AddUserSecrets<Program>()
-                         .AddJsonFile( "configInfo.json" )
-                         .Build()
-                         .Get<AppConfiguration>();
+            builder.Register( ( c, p ) =>
+                    new ConfigurationBuilder()
+                        .SetBasePath( Environment.CurrentDirectory )
+                        .AddUserSecrets<Program>()
+                        .AddJsonFile( "configInfo.json" )
+                        .Build() )
+                .As<IConfigurationRoot>()
+                .SingleInstance();
 
-                     return retVal;
-                 } )
+            builder.Register( c => c.Resolve<IConfigurationRoot>().Get<AppConfiguration>() )
                 .AsSelf()
                 .SingleInstance();
 
-            builder.Register<IJ4JLoggerConfiguration>(
-                ( c, p ) => c.Resolve<AppConfiguration>().Logger );
+            builder.Register(
+                    c =>
+                    {
+                        var configRoot = c.Resolve<IConfigurationRoot>();
 
-            builder.Register<ILogger>( ( c, p ) =>
-                 {
-                     var loggerConfig = c.Resolve<IJ4JLoggerConfiguration>();
+                        var loggerBuilder = new J4JLoggerConfigurationRootBuilder();
 
-                     return new LoggerConfiguration()
-                         .Enrich.FromLogContext()
-                         .SetMinimumLevel( loggerConfig.MinLogLevel )
-                         .WriteTo.Console( restrictedToMinimumLevel: loggerConfig.MinLogLevel )
-                         .WriteTo.File(
-                             path: J4JLoggingExtensions.DefineLocalAppDataLogPath( "log.txt", "J4JSoftware/AlphaVantageRetriever" ),
-                             restrictedToMinimumLevel: loggerConfig.MinLogLevel
-                         )
-                         .CreateLogger();
-                 } )
+                        loggerBuilder
+                            .AddChannel<ConsoleChannel>()
+                            .AddChannel<FileChannel>();
+
+                        return loggerBuilder.Build<J4JLoggerConfiguration>( configRoot, "Logger" );
+                    } )
+                .As<IJ4JLoggerConfiguration>()
                 .SingleInstance();
 
-            builder.RegisterGeneric( typeof( J4JLogger<> ) )
-                .As( typeof( IJ4JLogger<> ) )
-                .SingleInstance();
+            builder.AddJ4JLogging();
 
             builder.RegisterType<DataRetriever>()
                 .SingleInstance()

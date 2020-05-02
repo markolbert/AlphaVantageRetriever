@@ -1,8 +1,21 @@
 {
-  "PathToSecuritiesFile": "C:\\Users\\Mark\\OneDrive - arcabama\\City\\FPPC\\2020\\2019 Fitch Trust Securities.csv",
-  "PathToPriceFile": "C:\\Users\\Mark\\OneDrive - arcabama\\City\\FPPC\\2020\\2019 Fitch Trust Pricing Data.csv",
-  "ReportingYear": 2019,
+  "OutputFilePath": "C:\\Users\\Mark\\Desktop\\web\\stock-prices.txt",
   "CallsPerMinute": 4.5,
+  "Tickers": [
+    "MJFOX",
+    "VFFSX",
+    "NPRTX",
+    "PRITX",
+    "VEUSX",
+    "VPADX",
+    "VSMAX",
+    "SRVEX",
+    "SNXFX",
+    "PRIDX",
+    "VFIAX",
+    "VEXRX",
+    "VEXAX"
+  ],
   "Logger": {
     "SourceMessageTemplate": "({File}:{Line})",
     "MemberMessageTemplate": "{SourceContext}::{Member}",
@@ -21,6 +34,6 @@
         "FileName": "log.txt",
         "MinimumLevel": "Verbose"
       }
-    ] 
+    ]
   }
 }
