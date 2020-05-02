@@ -102,9 +102,6 @@ namespace J4JSoftware.AlphaVantageRetriever
             if( Configuration.CallsPerMinute <= 0 )
                 Configuration.CallsPerMinute = 4.5F;
 
-            if( !String.IsNullOrEmpty( AlphaVantageKey ) )
-                Configuration.ApiKey = AlphaVantageKey;
-
             // this AutoResetEvent is 'shared' by the calling method and the data retrieval method
             // and is used to indicate when all available SecurityInfo objects have been processed
             var jobDone = new AutoResetEvent( false );

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using J4JSoftware.EFCoreUtilities;
 using J4JSoftware.Logging;
 using Microsoft.EntityFrameworkCore.Design;
@@ -12,7 +14,7 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         private string _dbPath = Path.Combine( Environment.CurrentDirectory, DbName );
 
-        public string ApiKey { get; set; }
+        public string ApiKeyEncrypted { get; set; }
         public string PathToSecuritiesFile { get; set; }
         public string PathToPriceFile { get; set; }
         public int ReportingYear { get; set; }
@@ -24,6 +26,18 @@ namespace J4JSoftware.AlphaVantageRetriever
             set => _dbPath = value;
         }
 
-        //public J4JLoggerConfiguration Logger { get; set; }
+        public string ApiKey
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ApiKeyEncrypted))
+                    return null;
+
+                var encoded = Convert.FromBase64String(ApiKeyEncrypted);
+                var decrypted = ProtectedData.Unprotect(encoded, null, DataProtectionScope.CurrentUser);
+
+                return Encoding.Unicode.GetString(decrypted);
+            }
+        }
     }
 }

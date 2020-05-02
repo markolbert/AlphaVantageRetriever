@@ -23,14 +23,14 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             _logger = loggerFactory.CreateLogger( typeof(Program) );
 
             var retriever = _svcProvider.GetService<DataRetriever>();
-            retriever.GetPrices();
+            var priceData = retriever.GetPrices();
 
             var config = _svcProvider.GetService<Configuration>();
 
             if( File.Exists( config.OutputFilePath ) )
                 File.Delete( config.OutputFilePath );
 
-            File.WriteAllText( config.OutputFilePath, config.Prices.ToCsv() );
+            File.WriteAllText( config.OutputFilePath, priceData.ToCsv() );
         }
 
         private static void ConfigureServices()
@@ -40,8 +40,9 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             builder.Register((c, p) =>
                     new ConfigurationBuilder()
                         .SetBasePath(Environment.CurrentDirectory)
-                        .AddUserSecrets<Program>()
+                        //.AddUserSecrets<Program>()
                         .AddJsonFile("appConfig.json")
+                        .AddJsonFile("AlphaVantageAPI.key")
                         .Build())
                 .As<IConfigurationRoot>()
                 .SingleInstance();

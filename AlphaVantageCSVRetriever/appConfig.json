@@ -1,5 +1,5 @@
 {
-  "OutputFilePath": "C:\\Users\\Mark\\Desktop\\web\\stock-prices.txt",
+  "OutputFilePath": "C:\\Users\\Mark\\Desktop\\web\\stock-prices.csv",
   "CallsPerMinute": 4.5,
   "Tickers": [
     "MJFOX",
