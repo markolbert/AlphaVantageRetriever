@@ -19,8 +19,8 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
             ConfigureServices();
 
-            var loggerFactory = _svcProvider.GetService<IJ4JLoggerFactory>();
-            _logger = loggerFactory.CreateLogger( typeof(Program) );
+            _logger = _svcProvider.GetService<IJ4JLogger>();
+            _logger.SetLoggedType<Program>();
 
             var retriever = _svcProvider.GetService<DataRetriever>();
             var priceData = retriever.GetPrices();

@@ -29,12 +29,12 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 
         public DataRetriever( 
             Configuration config,
-            IJ4JLoggerFactory loggerFactory )
+            IJ4JLogger logger )
         {
             _config = config ?? throw new NullReferenceException( nameof(config) );
+            _logger = logger ?? throw new NullReferenceException( nameof(logger) );
 
-            _logger = loggerFactory?.CreateLogger(this.GetType()) 
-                     ?? throw new NullReferenceException( nameof(loggerFactory) );
+            //_logger.SetLoggedType<DataRetriever>();
         }
 
         public List<DailyPrice> GetPrices()

@@ -58,9 +58,9 @@ namespace J4JSoftware.AlphaVantageRetriever
             CancellationToken cancellationToken = default
         )
         {
-            var loggerFactory = AppServiceProvider.Instance.GetRequiredService<IJ4JLoggerFactory>();
+            _logger = AppServiceProvider.Instance.GetRequiredService<IJ4JLogger>();
+            _logger.SetLoggedType<Program>();
 
-            _logger = loggerFactory.CreateLogger( GetType() );
             Configuration = AppServiceProvider.Instance.GetRequiredService<AppConfiguration>();
 
             if( Retrieve )

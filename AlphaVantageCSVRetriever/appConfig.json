@@ -17,11 +17,8 @@
     "VEXAX"
   ],
   "Logger": {
-    "SourceMessageTemplate": "({File}:{Line})",
-    "MemberMessageTemplate": "{SourceContext}::{Member}",
-    "IncludeSource": false,
-    "IncludeAssemblyName": false,
     "SourceRootPath": "C:/Programming/AlphaVantage",
+    "EventElements" :  "None", 
     "Channels": [
       {
         "Channel": "Console",
