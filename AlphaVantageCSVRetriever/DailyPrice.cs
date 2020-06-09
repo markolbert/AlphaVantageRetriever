@@ -5,6 +5,8 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
     public class DailyPrice
     {
         public string Ticker { get; set; }
+        public string MoneydanceAccount { get; set; }
+        public string MoneydanceSecurity { get; set; }
         public string Name { get; set; }
         public decimal NameMatchScore { get; set; }
         public DateTime Date { get; set; }

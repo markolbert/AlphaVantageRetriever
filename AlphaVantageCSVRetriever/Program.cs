@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoFacJ4JLogging;
@@ -23,7 +24,10 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             _logger.SetLoggedType<Program>();
 
             var retriever = _svcProvider.GetService<DataRetriever>();
-            var priceData = retriever.GetPrices();
+
+            var priceData = retriever.GetPrices()
+                .OrderBy(d=>d.MoneydanceAccount)
+                .ToList();
 
             var config = _svcProvider.GetService<Configuration>();
 
@@ -37,21 +41,17 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
             var builder = new ContainerBuilder();
 
-            builder.Register((c, p) =>
-                    new ConfigurationBuilder()
-                        .SetBasePath(Environment.CurrentDirectory)
-                        //.AddUserSecrets<Program>()
-                        .AddJsonFile("appConfig.json")
-                        .AddJsonFile("AlphaVantageAPI.key")
-                        .Build())
-                .As<IConfigurationRoot>()
-                .SingleInstance();
+            var configRoot = new ConfigurationBuilder()
+                .SetBasePath( Environment.CurrentDirectory )
+                .AddJsonFile( "appConfig.json" )
+                .AddJsonFile( "AlphaVantageAPI.key" )
+                .Build();
 
-            builder.Register(c => c.Resolve<IConfigurationRoot>().Get<Configuration>())
+            builder.Register(c => configRoot.Get<Configuration>())
                 .AsSelf()
                 .SingleInstance();
 
-            builder.AddJ4JLogging( typeof(ConsoleChannel), typeof(FileChannel) );
+            builder.AddJ4JLogging<J4JLoggerConfiguration>(configRoot,"Logger", typeof(ConsoleChannel), typeof(FileChannel) );
 
             builder.RegisterType<DataRetriever>()
                 .AsSelf()

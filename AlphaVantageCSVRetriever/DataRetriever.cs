@@ -95,7 +95,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                                 break;
                         }
 
-                        if (_index >= _config.Tickers.Count)
+                        if (_index >= _config.Securities.Count)
                             jobDone.Set();
                     }
                 }
@@ -108,11 +108,11 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 
         protected void RetrievePriceData( AutoResetEvent jobDone )
         {
-            var ticker = _config.Tickers[ _index ];
+            var security = _config.Securities[ _index ];
 
             // retrieve historical price data
             var url =
-                $"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={ticker}&apikey={_config.ApiKey}&datatype=csv";
+                $"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={security.Ticker}&apikey={_config.ApiKey}&datatype=csv";
             var rawText = url.GetStringFromUrl();
 
             try
@@ -121,7 +121,9 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 
                 var data = new DailyPrice()
                 {
-                    Ticker = ticker,
+                    Ticker = security.Ticker,
+                    MoneydanceAccount = security.Moneydance.Account,
+                    MoneydanceSecurity = security.Moneydance.Security,
                     Close = rawData.Price,
                     High = rawData.High,
                     Low = rawData.Low,
@@ -129,45 +131,45 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                     Date = rawData.LatestDay
                 };
 
-                if( _retrieved.ContainsKey( ticker ) ) _retrieved[ ticker ] = data;
-                else _retrieved.Add( ticker, data );
+                if( _retrieved.ContainsKey( security.Ticker ) ) _retrieved[ security.Ticker ] = data;
+                else _retrieved.Add( security.Ticker, data );
             }
             catch(Exception e)
             {
-                _logger.Error( $"Exception for {ticker}: {e.Message}" );
+                _logger.Error( $"Exception for {security}: {e.Message}" );
                 return;
             }
 
-            _logger.Information<string>( "Price data retrieved for {0}", ticker );
+            _logger.Information<string>( "Price data retrieved for {0}", security.Ticker );
         }
 
         protected void RetrieveSymbolInfo(AutoResetEvent jobDone)
         {
-            var ticker = _config.Tickers[_index];
+            var security = _config.Securities[_index];
 
             // retrieve search results
             var url =
-                $"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={ticker}&apikey={_config.ApiKey}&datatype=csv";
+                $"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={security.Ticker}&apikey={_config.ApiKey}&datatype=csv";
             var rawText = url.GetStringFromUrl();
 
             try
             {
                 var rawData = rawText.FromCsv<List<SearchResults>>()
-                    .FirstOrDefault( rd => rd.Symbol.Equals(ticker, StringComparison.OrdinalIgnoreCase) );
+                    .FirstOrDefault( rd => rd.Symbol.Equals(security.Ticker, StringComparison.OrdinalIgnoreCase) );
 
-                if( rawData != null && _retrieved.ContainsKey( ticker ) )
+                if( rawData != null && _retrieved.ContainsKey( security.Ticker ) )
                 {
-                    _retrieved[ ticker ].Name = rawData.Name;
-                    _retrieved[ ticker ].NameMatchScore = rawData.MatchScore;
+                    _retrieved[ security.Ticker ].Name = rawData.Name;
+                    _retrieved[ security.Ticker ].NameMatchScore = rawData.MatchScore;
                 }
             }
             catch (Exception e)
             {
-                _logger.Error($"Exception for {ticker}: {e.Message}");
+                _logger.Error($"Exception for {security}: {e.Message}");
                 return;
             }
 
-            _logger.Information<string>("Symbol info retrieved for {0}", ticker);
+            _logger.Information<string>("Symbol info retrieved for {0}", security.Ticker);
         }
     }
 }

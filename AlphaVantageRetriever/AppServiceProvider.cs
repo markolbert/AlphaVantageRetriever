@@ -18,45 +18,25 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
             var builder = new ContainerBuilder();
 
-            builder.Register( ( c, p ) =>
-                {
-                    var config = c.Resolve<AppConfiguration>();
-
-                    return new AlphaVantageContext( config );
-                } )
+            builder.RegisterType<AlphaVantageContext>()
                 .AsSelf()
                 .SingleInstance();
 
-            builder.Register( ( c, p ) =>
-                    new ConfigurationBuilder()
-                        .SetBasePath( Environment.CurrentDirectory )
-                        .AddUserSecrets<Program>()
-                        .AddJsonFile( "configInfo.json" )
-                        .Build() )
-                .As<IConfigurationRoot>()
-                .SingleInstance();
+            var configRoot = new ConfigurationBuilder()
+                .SetBasePath( Environment.CurrentDirectory )
+                .AddUserSecrets<Program>()
+                .AddJsonFile( "configInfo.json" )
+                .Build();
 
-            builder.Register( c => c.Resolve<IConfigurationRoot>().Get<AppConfiguration>() )
+            builder.Register( c => configRoot.Get<AppConfiguration>() )
                 .AsSelf()
+                .AsImplementedInterfaces()
                 .SingleInstance();
 
-            builder.Register(
-                    c =>
-                    {
-                        var configRoot = c.Resolve<IConfigurationRoot>();
-
-                        var loggerBuilder = new J4JLoggerConfigurationRootBuilder();
-
-                        loggerBuilder
-                            .AddChannel<ConsoleChannel>()
-                            .AddChannel<FileChannel>();
-
-                        return loggerBuilder.Build<J4JLoggerConfiguration>( configRoot, "Logger" );
-                    } )
-                .As<IJ4JLoggerConfiguration>()
-                .SingleInstance();
-
-            builder.AddJ4JLogging();
+            builder.AddJ4JLogging<J4JLoggerConfiguration>( 
+                configRoot, 
+                "Logger", 
+                typeof(ConsoleChannel), typeof(FileChannel) );
 
             builder.RegisterType<DataRetriever>()
                 .SingleInstance()
