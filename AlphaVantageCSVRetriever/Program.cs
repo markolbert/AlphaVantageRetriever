@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using AutoFacJ4JLogging;
 using J4JSoftware.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
