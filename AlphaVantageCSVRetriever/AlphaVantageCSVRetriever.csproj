@@ -18,12 +18,24 @@
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.7.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\J4JLogging\AutoFacJ4JLogging\AutofacJ4JLogging.csproj" />
-    <ProjectReference Include="..\..\J4JLogging\ConsoleChannel\ConsoleChannel.csproj" />
-    <ProjectReference Include="..\..\J4JLogging\FileChannel\FileChannel.csproj" />
-    <ProjectReference Include="..\..\J4JLogging\J4JLogging\J4JLogging.csproj" />
-  </ItemGroup>
+	<Choose>
+		<When Condition=" '$(Configuration)'=='Debug' ">
+			<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
+				<ProjectReference Include="..\..\J4JLogging\AutoFacJ4JLogging\AutofacJ4JLogging.csproj" />
+				<ProjectReference Include="..\..\J4JLogging\ConsoleChannel\ConsoleChannel.csproj" />
+				<ProjectReference Include="..\..\J4JLogging\FileChannel\FileChannel.csproj" />
+				<ProjectReference Include="..\..\J4JLogging\J4JLogging\J4JLogging.csproj" />
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(Configuration)'=='Release'">
+			<ItemGroup>
+				<PackageReference Include="J4JSoftware.Logging" Version="2.5.1" />
+				<PackageReference Include="J4JSoftware.Logging.Console" Version="2.5.1" />
+				<PackageReference Include="J4JSoftware.Logging.File" Version="2.5.1" />
+				<PackageReference Include="J4JSoftware.Logging.Autofac" Version="2.5.1" />
+			</ItemGroup>
+		</When>
+	</Choose>
 
   <ItemGroup>
     <None Update="AlphaVantageAPI.key">
