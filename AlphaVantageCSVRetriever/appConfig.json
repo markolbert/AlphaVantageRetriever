@@ -82,19 +82,17 @@
   ],
   "Logger": {
     "SourceRootPath": "C:/Programming/AlphaVantage",
-    "EventElements" :  "None", 
-    "Channels": [
-      {
-        "Channel": "Console",
+    "EventElements": "None",
+    "Channels": {
+      "Console": {
         "MinimumLevel": "Verbose"
       },
-      {
-        "Channel": "File",
+      "File": {
         "Location": "AppData",
         "RollingInterval": "Day",
         "FileName": "log.txt",
         "MinimumLevel": "Verbose"
       }
-    ]
+    }
   }
 }

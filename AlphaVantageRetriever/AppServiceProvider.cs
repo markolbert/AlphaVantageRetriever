@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using J4JSoftware.Logging;
 using Microsoft.Extensions.Configuration;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
@@ -26,15 +27,22 @@ namespace J4JSoftware.AlphaVantageRetriever
                 .AddJsonFile( "configInfo.json" )
                 .Build();
 
+            var channels = configRoot.GetSection( "Logger:Channels" ).Get<ChannelConfig>();
+
+            builder.Register( c =>
+                    new J4JLoggerConfiguration<ChannelConfig>
+                    {
+                        Channels = channels
+                    } )
+                .AsImplementedInterfaces()
+                .SingleInstance();
+
             builder.Register( c => configRoot.Get<AppConfiguration>() )
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            builder.AddJ4JLogging<J4JLoggerConfiguration>( 
-                configRoot, 
-                "Logger", 
-                typeof(ConsoleChannel), typeof(FileChannel) );
+            builder.RegisterJ4JLogging();
 
             builder.RegisterType<DataRetriever>()
                 .SingleInstance()

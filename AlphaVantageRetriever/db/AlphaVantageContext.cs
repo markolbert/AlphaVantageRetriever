@@ -2,6 +2,7 @@
 using J4JSoftware.EFCoreUtilities;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageRetriever
 {

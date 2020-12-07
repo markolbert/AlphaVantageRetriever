@@ -9,18 +9,16 @@
     "IncludeSource": false,
     "IncludeAssemblyName": false,
     "SourceRootPath": "C:/Programming/AlphaVantage",
-    "Channels": [
-      {
-        "Channel": "Console",
+    "Channels": {
+      "Console": {
         "MinimumLevel": "Verbose"
       },
-      {
-        "Channel": "File",
+      "File": {
         "Location": "AppData",
         "RollingInterval": "Day",
         "FileName": "log.txt",
         "MinimumLevel": "Verbose"
-      }
-    ] 
+      } 
+    }
   }
 }

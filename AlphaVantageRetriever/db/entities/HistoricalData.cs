@@ -1,6 +1,7 @@
 ﻿using System;
 using J4JSoftware.EFCoreUtilities;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageRetriever
 {

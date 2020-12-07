@@ -1,3 +1,7 @@
+## Breaking Changes
+
+The code was updated to target Net5 and to enforce nullable reference types.
+
 # AlphaVantageRetriever
 
 This is a quick-and-dirty C# app I put together to download a year's worth of stock price data from AlphaVantage. I needed to do that

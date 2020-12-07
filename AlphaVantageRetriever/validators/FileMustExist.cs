@@ -9,14 +9,14 @@ namespace J4JSoftware.AlphaVantageRetriever
     {
         public ValidationResult GetValidationResult( CommandOption option, ValidationContext context )
         {
-            if( !option.HasValue() || ( option.Value() == null ) ) return ValidationResult.Success;
+            if( !option.HasValue() || ( option.Value() == null ) ) return ValidationResult.Success!;
 
             if( !File.Exists(option.Value()) )
             {
                 return new ValidationResult( $"The path '{option.Value()}' is invalid" );
             }
 
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
     }
 }

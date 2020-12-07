@@ -5,6 +5,7 @@ using System.Text;
 using J4JSoftware.EFCoreUtilities;
 using J4JSoftware.Logging;
 using Microsoft.EntityFrameworkCore.Design;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
@@ -30,11 +31,10 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
             get
             {
-                if (string.IsNullOrEmpty(ApiKeyEncrypted))
-                    return null;
-
                 var encoded = Convert.FromBase64String(ApiKeyEncrypted);
+#pragma warning disable CA1416 // Validate platform compatibility
                 var decrypted = ProtectedData.Unprotect(encoded, null, DataProtectionScope.CurrentUser);
+#pragma warning restore CA1416 // Validate platform compatibility
 
                 return Encoding.Unicode.GetString(decrypted);
             }

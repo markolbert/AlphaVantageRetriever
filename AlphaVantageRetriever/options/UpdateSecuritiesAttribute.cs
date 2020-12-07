@@ -22,7 +22,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 context.Application.OnParsingComplete( x =>
                 {
                     if( opt.HasValue())
-                        property.SetValue( context.ModelAccessor.GetModel(), opt.Value() ?? "@" );
+                        property.SetValue( context.ModelAccessor!.GetModel(), opt.Value() ?? "@" );
                 } );
             }
         }

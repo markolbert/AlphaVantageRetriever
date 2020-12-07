@@ -1,4 +1,6 @@
-﻿namespace J4JSoftware.AlphaVantageCSVRetriever
+﻿#pragma warning disable 8618
+
+namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class SearchResults
     {

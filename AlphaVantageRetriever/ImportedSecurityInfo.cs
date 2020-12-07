@@ -1,4 +1,5 @@
 ﻿using System;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageRetriever
 {

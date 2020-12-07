@@ -14,8 +14,8 @@ namespace J4JSoftware.AlphaVantageRetriever
     public class DataRetriever
     {
         private readonly object _lockObject = new object();
-        private AppConfiguration _config;
-        private List<SecurityInfo> _securities;
+        private AppConfiguration? _config;
+        private List<SecurityInfo>? _securities;
         private int _index = 0;
         private bool _replaceExistingPriceData;
 
@@ -23,10 +23,10 @@ namespace J4JSoftware.AlphaVantageRetriever
             AlphaVantageContext dbContext,
             IJ4JLogger logger )
         {
-            DbContext = dbContext ?? throw new NullReferenceException( nameof(dbContext) );
-            Logger = logger ?? throw new NullReferenceException( nameof(logger) );
-
-            //Logger.SetLoggedType<DataRetriever>();
+            DbContext = dbContext;
+            
+            Logger = logger;
+            Logger.SetLoggedType( this.GetType() );
         }
 
         protected IJ4JLogger Logger { get; }
@@ -38,14 +38,14 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         public void Initialize( AppConfiguration config, bool replaceExistingPriceData )
         {
-            _config = config ?? throw new NullReferenceException( nameof(config) );
+            _config = config;
 
             _securities = DbContext.Securities.ToList();
             _index = 0;
             _replaceExistingPriceData = replaceExistingPriceData;
         }
 
-        public void ProcessNextSymbol( object stateInfo )
+        public void ProcessNextSymbol( object? stateInfo )
         {
             // wrap the call to the actual processing method in a monitor to
             // prevent multiple simultaneous accesses to the DbContext object
@@ -70,13 +70,14 @@ namespace J4JSoftware.AlphaVantageRetriever
         protected void Process( AutoResetEvent jobDone )
         {
             var mesg = new StringBuilder();
-            SecurityInfo dbSecurity = null;
+
+            SecurityInfo? dbSecurity = null;
 
             // scan through all the SecurityInfo objects looking for the next one that
             // is reportable, has a ticker and hasn't already had its data retrieved
             while( true )
             {
-                if( _index >= _securities.Count )
+                if( _index >= _securities!.Count )
                 {
                     jobDone.Set();
                     return;
@@ -121,7 +122,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 $"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={dbSecurity.Ticker}&outputsize=full&apikey={ApiKey}&datatype=csv";
             var rawText = url.GetStringFromUrl();
 
-            List<AlphaVantageData> priceData = null;
+            List<AlphaVantageData>? priceData = null;
 
             try
             {

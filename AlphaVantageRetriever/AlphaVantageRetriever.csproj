@@ -2,10 +2,11 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFramework>net5.0</TargetFramework>
 		<UserSecretsId>4aab1186-fb7e-4989-9189-35799d5b0785</UserSecretsId>
 		<AssemblyName>J4JSoftware.AlphaVantageRetriever</AssemblyName>
 		<RootNamespace>J4JSoftware.AlphaVantageRetriever</RootNamespace>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,20 +16,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Autofac" Version="5.2.0" />
-		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+		<PackageReference Include="Autofac" Version="6.1.0" />
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
 		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.5" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.5" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.5" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
-		<PackageReference Include="ServiceStack.Text" Version="5.9.0" />
-		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.7.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+		<PackageReference Include="ServiceStack.Text" Version="5.10.2" />
+		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="5.0.0" />
 	</ItemGroup>
 
 	<Choose>
@@ -36,8 +37,6 @@
 			<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
 				<ProjectReference Include="..\..\EFCoreUtilities\EFCoreUtilities\EFCoreUtilities.csproj" />
 				<ProjectReference Include="..\..\J4JLogging\AutoFacJ4JLogging\AutofacJ4JLogging.csproj" />
-				<ProjectReference Include="..\..\J4JLogging\ConsoleChannel\ConsoleChannel.csproj" />
-				<ProjectReference Include="..\..\J4JLogging\FileChannel\FileChannel.csproj" />
 				<ProjectReference Include="..\..\J4JLogging\J4JLogging\J4JLogging.csproj" />
 			</ItemGroup>
 		</When>

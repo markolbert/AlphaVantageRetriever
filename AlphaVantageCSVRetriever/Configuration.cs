@@ -3,21 +3,10 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using J4JSoftware.Logging;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageCSVRetriever
 {
-    public class Moneydance
-    {
-        public string Security { get; set; }
-        public string Account { get; set; }
-    }
-
-    public class SecurityInfo
-    {
-        public string Ticker { get; set; }
-        public Moneydance Moneydance { get; set; }
-    }
-
     public class Configuration
     {
         public string OutputFilePath { get; set; }
@@ -29,11 +18,10 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
             get
             {
-                if( string.IsNullOrEmpty( ApiKeyEncrypted ) )
-                    return null;
-
                 var encoded = Convert.FromBase64String( ApiKeyEncrypted );
+#pragma warning disable CA1416 // Validate platform compatibility
                 var decrypted = ProtectedData.Unprotect( encoded, null, DataProtectionScope.CurrentUser );
+#pragma warning restore CA1416 // Validate platform compatibility
 
                 return Encoding.Unicode.GetString( decrypted );
             }

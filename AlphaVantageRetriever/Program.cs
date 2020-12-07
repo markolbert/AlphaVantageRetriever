@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceStack;
 using SecurityInfo = J4JSoftware.AlphaVantageRetriever.SecurityInfo;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageRetriever
 {
@@ -33,7 +34,7 @@ namespace J4JSoftware.AlphaVantageRetriever
         internal bool ReplaceExistingData { get; set; }
 
         [ ExportToFileOption ]
-        internal string PathToPriceFile { get; set; }
+        internal string? PathToPriceFile { get; set; }
 
         [ UpdateSecurities ] 
         internal string PathToSecuritiesFile { get; set; }
@@ -139,7 +140,7 @@ namespace J4JSoftware.AlphaVantageRetriever
         private int ExportDataToCSV()
         {
             if( PathToPriceFile != "@" )
-                Configuration.PathToPriceFile = PathToPriceFile;
+                Configuration.PathToPriceFile = PathToPriceFile!;
 
             _logger.Information( "Starting export of price data to CSV file..." );
 

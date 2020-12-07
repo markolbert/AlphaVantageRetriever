@@ -9,14 +9,14 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
         }
 
-        protected override ValidationResult IsValid( object value, ValidationContext validationContext )
+        protected override ValidationResult IsValid( object? value, ValidationContext validationContext )
         {
             if( value == null || ( value is int cpm && cpm <= 0 ) )
             {
                 return new ValidationResult( FormatErrorMessage( validationContext.DisplayName ) );
             }
 
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
     }
 }

@@ -7,6 +7,7 @@ using J4JSoftware.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceStack;
+#pragma warning disable 8618
 
 namespace J4JSoftware.AlphaVantageCSVRetriever
 {
@@ -19,18 +20,18 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
             ConfigureServices();
 
-            _logger = _svcProvider.GetService<IJ4JLogger>();
+            _logger = _svcProvider.GetService<IJ4JLogger>()!;
             _logger.SetLoggedType<Program>();
 
             var retriever = _svcProvider.GetService<DataRetriever>();
 
-            var priceData = retriever.GetPrices()
+            var priceData = retriever!.GetPrices()
                 .OrderBy(d=>d.MoneydanceAccount)
                 .ToList();
 
             var config = _svcProvider.GetService<Configuration>();
 
-            if( File.Exists( config.OutputFilePath ) )
+            if( File.Exists( config!.OutputFilePath ) )
                 File.Delete( config.OutputFilePath );
 
             File.WriteAllText( config.OutputFilePath, priceData.ToCsv() );
@@ -50,7 +51,16 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 .AsSelf()
                 .SingleInstance();
 
-            builder.AddJ4JLogging<J4JLoggerConfiguration>(configRoot,"Logger", typeof(ConsoleChannel), typeof(FileChannel) );
+            var channels = configRoot.GetSection( "Logger:Channels" ).Get<ChannelConfig>();
+
+            builder.Register( c => new J4JLoggerConfiguration<ChannelConfig>
+                {
+                    Channels = channels
+                } )
+                .AsImplementedInterfaces()
+                .SingleInstance();
+
+            builder.RegisterJ4JLogging();
 
             builder.RegisterType<DataRetriever>()
                 .AsSelf()

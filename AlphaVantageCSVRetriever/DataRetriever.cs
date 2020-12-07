@@ -23,7 +23,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         private readonly Dictionary<string, DailyPrice> _retrieved =
             new Dictionary<string, DailyPrice>( StringComparer.OrdinalIgnoreCase );
 
-        private Timer _timer;
+        private Timer? _timer;
         private int _index = 0;
         private CurrentRetrieval _currentRetrieval;
 
@@ -62,7 +62,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 .ToList();
         }
 
-        public void ProcessNextSymbol( object stateInfo )
+        public void ProcessNextSymbol( object? stateInfo )
         {
             // wrap the call to the actual processing method in a monitor to
             // prevent multiple simultaneous accesses to the DbContext object

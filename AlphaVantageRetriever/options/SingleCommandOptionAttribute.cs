@@ -6,7 +6,7 @@ namespace J4JSoftware.AlphaVantageRetriever
     [AttributeUsage(AttributeTargets.Class)]
     public class SingleCommandOptionAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid( object value, ValidationContext validationContext )
+        protected override ValidationResult IsValid( object? value, ValidationContext validationContext )
         {
             if( value is Program program )
             {
@@ -16,7 +16,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 cmdOptions += program.PathToPriceFile != null ? 1 : 0;
                 cmdOptions += !String.IsNullOrEmpty( program.PathToSecuritiesFile ) ? 1 : 0;
 
-                string mesg = null;
+                string mesg = string.Empty;
 
                 switch( cmdOptions )
                 {
@@ -26,7 +26,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                         break;
 
                     case 1:
-                        return ValidationResult.Success;
+                        return ValidationResult.Success!;
 
                     default:
                         mesg = "You can only specify one of -g|--get, -x|--export or -u|--update";
@@ -37,7 +37,7 @@ namespace J4JSoftware.AlphaVantageRetriever
                 return new ValidationResult(mesg);
             }
 
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
     }
 }
