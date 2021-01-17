@@ -13,10 +13,10 @@ namespace J4JSoftware.AlphaVantageRetriever
         public string SecurityName { get; set; }
         public string Type { get; set; }
         public string Issuer { get; set; }
-        public string ClassSeries { get; set; }
+        public string? ClassSeries { get; set; }
         public bool Reportable { get; set; }
-        public string Ticker { get; set; }
-        public string ErrorMessage { get; set; }
+        public string? Ticker { get; set; }
+        public string? ErrorMessage { get; set; }
         public bool RetrievedData { get; set; }
 
         public List<HistoricalData> HistoricalData { get; set; }

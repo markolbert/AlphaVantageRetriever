@@ -54,7 +54,10 @@ namespace J4JSoftware.AlphaVantageRetriever
 
         private static async Task<int> Main( string[] args )=>await CommandLineApplication.ExecuteAsync<Program>( args );
 
+        // ReSharper disable once UnusedMember.Local
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task<int> OnExecuteAsync(
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
             CommandLineApplication app,
             CancellationToken cancellationToken = default
         )

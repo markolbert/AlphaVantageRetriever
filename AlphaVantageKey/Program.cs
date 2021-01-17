@@ -8,7 +8,9 @@ namespace AlphaVantageKey
 {
     public class EncryptedData
     {
+#pragma warning disable 8618
         public string ApiKeyEncrypted { get; set; }
+#pragma warning restore 8618
     }
 
     class Program
@@ -24,7 +26,9 @@ namespace AlphaVantageKey
                 return;
 
             var bytes = Encoding.Unicode.GetBytes( apiKey );
+#pragma warning disable CA1416 // Validate platform compatibility
             var encoded = ProtectedData.Protect( bytes, null, DataProtectionScope.CurrentUser );
+#pragma warning restore CA1416 // Validate platform compatibility
 
             var encrypted = new EncryptedData()
             {

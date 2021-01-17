@@ -49,6 +49,7 @@ namespace J4JSoftware.AlphaVantageRetriever
         {
             // wrap the call to the actual processing method in a monitor to
             // prevent multiple simultaneous accesses to the DbContext object
+            
             if( Monitor.TryEnter( _lockObject ) )
             {
                 try

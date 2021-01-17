@@ -24,25 +24,21 @@ namespace J4JSoftware.AlphaVantageRetriever
             var configRoot = new ConfigurationBuilder()
                 .SetBasePath( Environment.CurrentDirectory )
                 .AddUserSecrets<Program>()
-                .AddJsonFile( "configInfo.json" )
+                .AddJsonFile("configInfo.json")
+                .AddJsonFile( "AlphaVantageAPI.json" )
                 .Build();
-
-            var channels = configRoot.GetSection( "Logger:Channels" ).Get<ChannelConfig>();
-
-            builder.Register( c =>
-                    new J4JLoggerConfiguration<ChannelConfig>
-                    {
-                        Channels = channels
-                    } )
-                .AsImplementedInterfaces()
-                .SingleInstance();
 
             builder.Register( c => configRoot.Get<AppConfiguration>() )
                 .AsSelf()
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            builder.RegisterJ4JLogging();
+            var channelInfo = new ChannelInformation()
+                .AddChannel<ConsoleConfig>("Logger:Channels:Console")
+                .AddChannel<FileConfig>("Logger:Channels:File");
+
+            builder.RegisterJ4JLogging<J4JLoggerConfiguration>(
+                new ChannelFactory(configRoot, channelInfo, "Logger"));
 
             builder.RegisterType<DataRetriever>()
                 .SingleInstance()

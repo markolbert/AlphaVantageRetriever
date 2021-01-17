@@ -1,7 +1,7 @@
 {
-  "PathToSecuritiesFile": "C:\\Users\\Mark\\OneDrive - arcabama\\City\\FPPC\\2020\\2019 Fitch Trust Securities.csv",
-  "PathToPriceFile": "C:\\Users\\Mark\\OneDrive - arcabama\\City\\FPPC\\2020\\2019 Fitch Trust Pricing Data.csv",
-  "ReportingYear": 2019,
+  "PathToSecuritiesFile": "D:\\Council Archive\\FPPC\\2021\\Fitch Trust AlphaVantage.csv",
+  "PathToPriceFile": "D:\\Council Archive\\FPPC\\2021\\AlphaVantage Prices.csv",
+  "ReportingYear": 2020,
   "CallsPerMinute": 4.5,
   "Logger": {
     "SourceMessageTemplate": "({File}:{Line})",
@@ -18,7 +18,7 @@
         "RollingInterval": "Day",
         "FileName": "log.txt",
         "MinimumLevel": "Verbose"
-      } 
+      }
     }
   }
 }
