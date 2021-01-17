@@ -51,16 +51,12 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 .AsSelf()
                 .SingleInstance();
 
-            var channels = configRoot.GetSection( "Logger:Channels" ).Get<ChannelConfig>();
+            var channelInfo = new ChannelInformation()
+                .AddChannel<ConsoleConfig>( "Logger:Channels:Console" )
+                .AddChannel<FileConfig>( "Logger:Channels:File" );
 
-            builder.Register( c => new J4JLoggerConfiguration<ChannelConfig>
-                {
-                    Channels = channels
-                } )
-                .AsImplementedInterfaces()
-                .SingleInstance();
-
-            builder.RegisterJ4JLogging();
+            builder.RegisterJ4JLogging<J4JLoggerConfiguration>(
+                new ChannelFactory( configRoot, channelInfo, "Logger" ) );
 
             builder.RegisterType<DataRetriever>()
                 .AsSelf()
