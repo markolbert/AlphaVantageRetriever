@@ -5,7 +5,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class CallsPerMinuteUpdater : PropertyUpdater<float>
     {
-        public CallsPerMinuteUpdater( IJ4JLogger? logger ) 
+        public CallsPerMinuteUpdater( IJ4JLogger? logger )
             : base( logger )
         {
         }

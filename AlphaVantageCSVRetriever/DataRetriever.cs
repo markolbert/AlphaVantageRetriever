@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using J4JSoftware.Logging;
 using ServiceStack;
@@ -10,24 +9,20 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class DataRetriever
     {
-        private enum CurrentRetrieval
-        {
-            Prices,
-            Name
-        }
-
-        private readonly object _lockObject = new object();
-        private readonly IJ4JLogger _logger;
         private readonly Configuration _config;
 
+        private readonly object _lockObject = new();
+        private readonly IJ4JLogger _logger;
+
         private readonly Dictionary<string, DailyPrice> _retrieved =
-            new Dictionary<string, DailyPrice>( StringComparer.OrdinalIgnoreCase );
+            new( StringComparer.OrdinalIgnoreCase );
+
+        private CurrentRetrieval _currentRetrieval;
+        private int _index;
 
         private Timer? _timer;
-        private int _index = 0;
-        private CurrentRetrieval _currentRetrieval;
 
-        public DataRetriever( 
+        public DataRetriever(
             Configuration config,
             IJ4JLogger logger )
         {
@@ -39,19 +34,19 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 
         public List<DailyPrice> GetPrices()
         {
-            _logger.Information("Initializing price retriever...");
+            _logger.Information( "Initializing price retriever..." );
 
             _retrieved.Clear();
 
             // this AutoResetEvent is 'shared' by the calling method and the data retrieval method
             // and is used to indicate when all available SecurityInfo objects have been processed
-            var jobDone = new AutoResetEvent(false);
+            var jobDone = new AutoResetEvent( false );
 
             var interval = Convert.ToInt32( 60000 / _config.CallsPerMinute );
             _currentRetrieval = CurrentRetrieval.Prices;
-            
+
             // this creates the timer and starts it running
-            _timer = new Timer(ProcessNextSymbol, jobDone, 0, interval);
+            _timer = new Timer( ProcessNextSymbol, jobDone, 0, interval );
 
             // wait until the processing is done
             jobDone.WaitOne();
@@ -67,27 +62,27 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             // wrap the call to the actual processing method in a monitor to
             // prevent multiple simultaneous accesses to the DbContext object
             if( Monitor.TryEnter( _lockObject ) )
-            {
                 try
                 {
                     // check to ensure we were given the AutoResetEvent we're expecting
-                    var jobDone = stateInfo as AutoResetEvent;
 
-                    if( jobDone == null )
-                        _logger.Error( $"Argument is not a {nameof( AutoResetEvent )}" );
+                    if( !( stateInfo is AutoResetEvent jobDone ) )
+                    {
+                        _logger.Error( $"Argument is not a {nameof(AutoResetEvent)}" );
+                    }
                     else
                     {
                         switch( _currentRetrieval )
                         {
                             case CurrentRetrieval.Prices:
-                                RetrievePriceData(jobDone);
-                                
+                                RetrievePriceData( jobDone );
+
                                 _currentRetrieval = CurrentRetrieval.Name;
 
                                 break;
 
                             case CurrentRetrieval.Name:
-                                RetrieveSymbolInfo(jobDone);
+                                RetrieveSymbolInfo( jobDone );
 
                                 _currentRetrieval = CurrentRetrieval.Prices;
                                 _index++;
@@ -95,15 +90,14 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                                 break;
                         }
 
-                        if (_index >= _config.Tickers.Count)
+                        if( _index >= _config.Tickers.Count )
                             jobDone.Set();
                     }
                 }
                 finally
                 {
-                    Monitor.Exit(_lockObject);
+                    Monitor.Exit( _lockObject );
                 }
-            }
         }
 
         protected void RetrievePriceData( AutoResetEvent jobDone )
@@ -112,7 +106,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 
             // retrieve historical price data
             var url =
-                $"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={ticker}&apikey={_config.ApiKey}&datatype=csv";
+                $"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={ticker}&apikey={_config.APIKey}&datatype=csv";
 
             var rawText = url.GetStringFromUrl();
 
@@ -120,7 +114,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             {
                 var rawData = rawText.FromCsv<AlphaVantageData>();
 
-                var data = new DailyPrice()
+                var data = new DailyPrice
                 {
                     Ticker = ticker,
                     Close = rawData.Price,
@@ -133,7 +127,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 if( _retrieved.ContainsKey( ticker ) ) _retrieved[ ticker ] = data;
                 else _retrieved.Add( ticker, data );
             }
-            catch(Exception e)
+            catch( Exception e )
             {
                 _logger.Error( $"Exception for {ticker}: {e.Message}" );
                 return;
@@ -142,20 +136,20 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             _logger.Information<string>( "Price data retrieved for {0}", ticker );
         }
 
-        protected void RetrieveSymbolInfo(AutoResetEvent jobDone)
+        protected void RetrieveSymbolInfo( AutoResetEvent jobDone )
         {
-            var ticker = _config.Tickers[_index];
+            var ticker = _config.Tickers[ _index ];
 
             // retrieve search results
             var url =
-                $"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={ticker}&apikey={_config.ApiKey}&datatype=csv";
+                $"https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={ticker}&apikey={_config.APIKey}&datatype=csv";
 
             var rawText = url.GetStringFromUrl();
 
             try
             {
                 var rawData = rawText.FromCsv<List<SearchResults>>()
-                    .FirstOrDefault( rd => rd.Symbol.Equals(ticker, StringComparison.OrdinalIgnoreCase) );
+                    .FirstOrDefault( rd => rd.Symbol.Equals( ticker, StringComparison.OrdinalIgnoreCase ) );
 
                 if( rawData != null && _retrieved.ContainsKey( ticker ) )
                 {
@@ -163,13 +157,19 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                     _retrieved[ ticker ].NameMatchScore = rawData.MatchScore;
                 }
             }
-            catch (Exception e)
+            catch( Exception e )
             {
-                _logger.Error($"Exception for {ticker}: {e.Message}");
+                _logger.Error( $"Exception for {ticker}: {e.Message}" );
                 return;
             }
 
-            _logger.Information<string>("Symbol info retrieved for {0}", ticker);
+            _logger.Information<string>( "Symbol info retrieved for {0}", ticker );
+        }
+
+        private enum CurrentRetrieval
+        {
+            Prices,
+            Name
         }
     }
 }

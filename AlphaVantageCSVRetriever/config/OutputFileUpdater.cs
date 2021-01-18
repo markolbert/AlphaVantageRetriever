@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using J4JSoftware.ConsoleUtilities;
 using J4JSoftware.Logging;
 
@@ -10,7 +6,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class OutputFileUpdater : PropertyUpdater<string>
     {
-        public OutputFileUpdater( IJ4JLogger? logger ) 
+        public OutputFileUpdater( IJ4JLogger? logger )
             : base( logger )
         {
         }
@@ -22,11 +18,11 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             if( !string.IsNullOrEmpty( origValue ) && File.Exists( origValue ) )
                 return UpdaterResult.OriginalOkay;
 
-            var filePath = GetText( origValue ?? "**undefined**", 
+            var filePath = GetText( origValue ?? "**undefined**",
                 "output file path",
                 Configuration.GetDefaultOutputFile() );
 
-            if( string.IsNullOrEmpty( origValue ) || !File.Exists( origValue ) )
+            if( string.IsNullOrEmpty( filePath ) )
                 return UpdaterResult.InvalidUserInput;
 
             newValue = filePath;

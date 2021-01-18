@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using J4JSoftware.ConsoleUtilities;
 
 namespace J4JSoftware.AlphaVantageCSVRetriever
 {
@@ -16,19 +13,14 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             OutputFilePath = GetDefaultOutputFile();
         }
 
-        [Updater(typeof(OutputFileUpdater))]
         public string OutputFilePath { get; set; }
-
-        [Updater(typeof(CallsPerMinuteUpdater))]
         public float CallsPerMinute { get; set; } = 4.5F;
-
-        [Updater(typeof(TickerUpdater))]
         public List<string> Tickers { get; set; } = new();
 
         public bool EncryptKey { get; set; }
 
         [ JsonIgnore ]
-        public string ApiKey
+        public string APIKey
         {
             get => _key;
 
@@ -46,7 +38,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         }
 
         [ JsonIgnore ]
-        public string ApiKeyEncrypted
+        public string EncyrptedAPIKey
         {
             get => _encryptedKey;
 
@@ -63,10 +55,11 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             }
         }
 
-        [JsonPropertyName("ApiKey")]
+        [ JsonPropertyName( "APIKey" ) ]
+        // ReSharper disable once UnusedMember.Local
         private string ApiKeyHidden
         {
-            set => ApiKeyEncrypted = value;
+            set => EncyrptedAPIKey = value;
         }
     }
 }

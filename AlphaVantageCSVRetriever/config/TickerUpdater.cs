@@ -6,7 +6,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class TickerUpdater : PropertyUpdater<List<string>>
     {
-        public TickerUpdater( IJ4JLogger? logger ) 
+        public TickerUpdater( IJ4JLogger? logger )
             : base( logger )
         {
         }

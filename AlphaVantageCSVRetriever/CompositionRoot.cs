@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Autofac;
 using J4JSoftware.Configuration.CommandLine;
+using J4JSoftware.ConsoleUtilities;
 using J4JSoftware.DependencyInjection;
 using J4JSoftware.Logging;
 using Microsoft.Extensions.Configuration;
@@ -16,13 +14,10 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class CompositionRoot : J4JCompositionRoot<J4JLoggerConfiguration>
     {
-        public static CompositionRoot Default { get; }
-
         static CompositionRoot()
         {
-            Default = new CompositionRoot()
+            Default = new CompositionRoot
             {
-                CachedLoggerScope = CachedLoggerScope.SingleInstance,
                 IncludeLastEvent = false,
                 LoggingSectionKey = "Logger",
                 UseConsoleLifetime = true
@@ -39,14 +34,23 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
         }
 
-        public DataRetriever GetDataRetriever() => Host!.Services.GetRequiredService<DataRetriever>();
-        public Configuration GetConfiguration() => Host!.Services.GetRequiredService<Configuration>();
+        public static CompositionRoot Default { get; }
+
+        public DataRetriever GetDataRetriever()
+        {
+            return Host!.Services.GetRequiredService<DataRetriever>();
+        }
+
+        public Configuration GetConfiguration()
+        {
+            return Host!.Services.GetRequiredService<Configuration>();
+        }
 
         protected override void SetupConfigurationEnvironment( IConfigurationBuilder builder )
         {
             base.SetupConfigurationEnvironment( builder );
 
-            var options = new OptionCollection();
+            var options = new OptionCollection( CommandLineStyle.Linux, loggerFactory: () => CachedLogger );
 
             options.Bind<Configuration, string>( c => c.OutputFilePath, "p" )!
                 .SetDescription( "path to the output file" );
@@ -55,10 +59,10 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 .SetDefaultValue( 4.5F )
                 .SetDescription( "calls per minute (float)" );
 
-            options.Bind<Configuration, List<string>>( c => c.Tickers, "s" )!
+            options.Bind<Configuration, List<string>>( c => c.Tickers, "t" )!
                 .SetDescription( "ticker symbols, separated by spaces" );
 
-            options.Bind<Configuration, string>( c => c.ApiKey, "k" )!
+            options.Bind<Configuration, string>( c => c.APIKey, "k" )!
                 .SetDescription( "AlphaVantage API key" );
 
             options.Bind<Configuration, bool>( c => c.EncryptKey, "e" )!
@@ -68,8 +72,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 .AddJsonFile( Program.AppConfigFile, false )
                 .AddJsonFile( Path.Combine( UserConfigurationFolder, Program.UserConfigFile ), true )
                 .AddUserSecrets<Program>()
-                .AddJ4JCommandLine( options )
-                .Build();
+                .AddJ4JCommandLine( options );
         }
 
         protected override void SetupDependencyInjection( HostBuilderContext hbc, ContainerBuilder builder )
@@ -83,6 +86,21 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             builder.RegisterType<DataRetriever>()
                 .AsSelf()
                 .SingleInstance();
+
+            builder.RegisterType<ConfigurationUpdater<Configuration>>()
+                .OnActivating( x => { x.Instance.Property( c => c.APIKey, new ApiKeyUpdater( CachedLogger ) ); } )
+                .Named<IConfigurationUpdater>( EncryptApiKeyApp.AutofacKey )
+                .SingleInstance();
+
+            builder.RegisterType<ConfigurationUpdater<Configuration>>()
+                .OnActivating( x =>
+                {
+                    x.Instance.Property( c => c.Tickers, new TickerUpdater( CachedLogger ) );
+                    x.Instance.Property( c => c.CallsPerMinute, new CallsPerMinuteUpdater( CachedLogger ) );
+                    x.Instance.Property( c => c.OutputFilePath, new OutputFileUpdater( CachedLogger ) );
+                } )
+                .Named<IConfigurationUpdater>( RetrieveDataApp.AutofacKey )
+                .SingleInstance();
         }
 
         protected override void SetupServices( HostBuilderContext hbc, IServiceCollection services )
@@ -91,7 +109,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 
             var config = hbc.Configuration.Get<Configuration>();
 
-            if (config!.EncryptKey)
+            if( config!.EncryptKey )
                 services.AddHostedService<EncryptApiKeyApp>();
             else
                 services.AddHostedService<RetrieveDataApp>();

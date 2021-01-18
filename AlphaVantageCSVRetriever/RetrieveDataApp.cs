@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Features.Indexed;
@@ -17,22 +12,21 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class RetrieveDataApp : IHostedService
     {
+        internal const string AutofacKey = "RetrieveData";
+
         private readonly Configuration _config;
         private readonly DataRetriever _dataRetriever;
-        private readonly IHost _host;
         private readonly IHostApplicationLifetime _lifetime;
         private readonly IJ4JLogger _logger;
 
         public RetrieveDataApp(
-            IHost host,
             Configuration config,
             DataRetriever dataRetriever,
             IHostApplicationLifetime lifetime,
-            IConfigurationUpdater<Configuration> configUpdater,
+            IIndex<string, IConfigurationUpdater> configUpdaters,
             IJ4JLogger logger
-            )
+        )
         {
-            _host = host;
             _config = config;
             _dataRetriever = dataRetriever;
             _lifetime = lifetime;
@@ -40,10 +34,11 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             _logger = logger;
             _logger.SetLoggedType( GetType() );
 
-            if( configUpdater.Validate( _config ) ) 
+            if( configUpdaters.TryGetValue( AutofacKey, out var configUpdater )
+                && configUpdater.Update( _config ) )
                 return;
 
-            _logger.Fatal("Incomplete configuration, aborting");
+            _logger.Fatal( "Incomplete configuration, aborting" );
             _lifetime.StopApplication();
         }
 
@@ -56,7 +51,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
             }
 
             var priceData = _dataRetriever!.GetPrices()
-                .OrderBy(d=>d.Ticker)
+                .OrderBy( d => d.Ticker )
                 .ToList();
 
             if( File.Exists( _config!.OutputFilePath ) )

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace J4JSoftware.AlphaVantageCSVRetriever
 {
@@ -21,8 +17,11 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 _ => Path.Combine( Environment.CurrentDirectory, "AlphaVantage.csv" )
             };
 
-            string get_windows_default() =>
-                Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.Desktop ), "AlphaVantage.csv" );
+            string get_windows_default()
+            {
+                return Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.Desktop ),
+                    "AlphaVantage.csv" );
+            }
         }
     }
 }

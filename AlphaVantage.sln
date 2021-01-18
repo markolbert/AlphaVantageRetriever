@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlphaVantageCSVRetriever", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutofacJ4JLogging", "..\J4JLogging\AutoFacJ4JLogging\AutofacJ4JLogging.csproj", "{64E5279C-EACE-428B-9638-24148CA62D20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlphaVantageKey", "AlphaVantageKey\AlphaVantageKey.csproj", "{C116A10A-FD24-4540-A9B8-5F3A8E25F5B7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection", "..\ProgrammingUtilities\DependencyInjection\DependencyInjection.csproj", "{17BEBECE-DA1F-4924-B4D1-37505F58382C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "J4JCommandLine", "..\J4JCommandLine\J4JCommandLine\J4JCommandLine.csproj", "{101EC219-FE77-44E8-B86A-B9A8A9F6085A}"
@@ -68,12 +66,6 @@ Global
 		{64E5279C-EACE-428B-9638-24148CA62D20}.NuGetRelease|Any CPU.Build.0 = NuGetRelease|Any CPU
 		{64E5279C-EACE-428B-9638-24148CA62D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64E5279C-EACE-428B-9638-24148CA62D20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C116A10A-FD24-4540-A9B8-5F3A8E25F5B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C116A10A-FD24-4540-A9B8-5F3A8E25F5B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C116A10A-FD24-4540-A9B8-5F3A8E25F5B7}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{C116A10A-FD24-4540-A9B8-5F3A8E25F5B7}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
-		{C116A10A-FD24-4540-A9B8-5F3A8E25F5B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C116A10A-FD24-4540-A9B8-5F3A8E25F5B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.NuGetRelease|Any CPU.ActiveCfg = NuGetRelease|Any CPU

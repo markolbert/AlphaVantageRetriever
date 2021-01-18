@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac.Features.Indexed;
@@ -16,30 +11,30 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class EncryptApiKeyApp : IHostedService
     {
+        internal const string AutofacKey = "EncryptKey";
+
         private readonly Configuration _config;
-        private readonly IHost _host;
         private readonly IHostApplicationLifetime _lifetime;
         private readonly IJ4JLogger _logger;
 
         public EncryptApiKeyApp(
-            IHost host,
             Configuration config,
             IHostApplicationLifetime lifetime,
-            IConfigurationUpdater<Configuration> configUpdater,
+            IIndex<string, IConfigurationUpdater> configUpdaters,
             IJ4JLogger logger
-            )
+        )
         {
-            _host = host;
             _config = config;
             _lifetime = lifetime;
 
             _logger = logger;
             _logger.SetLoggedType( GetType() );
 
-            if( configUpdater.Validate( _config ) ) 
+            if( configUpdaters.TryGetValue( AutofacKey, out var configUpdater )
+                && configUpdater.Update( _config ) )
                 return;
 
-            _logger.Fatal("Incomplete configuration, aborting");
+            _logger.Fatal( "Incomplete configuration, aborting" );
             _lifetime.StopApplication();
         }
 
@@ -51,21 +46,22 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
                 return;
             }
 
-            if( string.IsNullOrEmpty( _config.ApiKey ) )
+            if( string.IsNullOrEmpty( _config.APIKey ) )
             {
-                _logger.Error("No AlphaVantage API key was specified to encrypt");
+                _logger.Error( "No AlphaVantage API key was specified to encrypt" );
                 _lifetime.StopApplication();
 
                 return;
             }
 
-            var tempConfig = new Configuration { ApiKey = _config.ApiKey };
+            var tempConfig = new Configuration { APIKey = _config.APIKey };
 
             var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
-            var serialized = JsonSerializer.Serialize( tempConfig, jsonOptions);
+            jsonOptions.Converters.Add( new EncryptedAPIKeyConverter() );
+            var serialized = JsonSerializer.Serialize( tempConfig, jsonOptions );
 
-            await File.WriteAllTextAsync( 
-                Path.Combine( CompositionRoot.Default.UserConfigurationFolder, Program.UserConfigFile ), 
+            await File.WriteAllTextAsync(
+                Path.Combine( CompositionRoot.Default.UserConfigurationFolder, Program.UserConfigFile ),
                 serialized,
                 cancellationToken );
 
