@@ -15,8 +15,31 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
             newValue = origValue;
 
-            if( !string.IsNullOrEmpty( origValue ) && File.Exists( origValue ) )
-                return UpdaterResult.OriginalOkay;
+            if( !string.IsNullOrEmpty( origValue ) )
+            {
+                // check to ensure a file can be created if one doesn't exist
+                if( File.Exists( origValue ) )
+                    return UpdaterResult.OriginalOkay;
+
+                var pathOkay = true;
+
+                try
+                {
+                    var temp = File.CreateText( origValue );
+                    temp.WriteLine( "test line" );
+                    temp.Flush();
+                    temp.Close();
+
+                    File.Delete( origValue );
+                }
+                catch
+                {
+                    pathOkay = false;
+                }
+
+                if( pathOkay )
+                    return UpdaterResult.OriginalOkay;
+            }
 
             var filePath = Prompters.GetSingleValue( origValue ?? "**undefined**",
                 "output file path",

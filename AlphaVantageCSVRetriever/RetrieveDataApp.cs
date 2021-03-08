@@ -59,7 +59,7 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 
             await File.WriteAllTextAsync( _config.OutputFilePath, priceData.ToCsv(), cancellationToken );
 
-            _logger.Information( "Ticker information retrieved" );
+            _logger.Information<string>( "Ticker information written to {0}", _config.OutputFilePath );
 
             _lifetime.StopApplication();
         }
