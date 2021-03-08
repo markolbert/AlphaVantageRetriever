@@ -1,8 +1,7 @@
 {
   "profiles": {
     "AlphaVantageCSVRetriever": {
-      "commandName": "Project",
-      "commandLineArgs": "-t IBM"
+      "commandName": "Project"
     }
   }
 }

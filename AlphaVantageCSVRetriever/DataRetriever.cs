@@ -61,43 +61,45 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
             // wrap the call to the actual processing method in a monitor to
             // prevent multiple simultaneous accesses to the DbContext object
-            if( Monitor.TryEnter( _lockObject ) )
-                try
+            if( !Monitor.TryEnter( _lockObject ) ) 
+                return;
+
+            try
+            {
+                // check to ensure we were given the AutoResetEvent we're expecting
+
+                if( !( stateInfo is AutoResetEvent jobDone ) )
                 {
-                    // check to ensure we were given the AutoResetEvent we're expecting
-
-                    if( !( stateInfo is AutoResetEvent jobDone ) )
-                    {
-                        _logger.Error( $"Argument is not a {nameof(AutoResetEvent)}" );
-                    }
-                    else
-                    {
-                        switch( _currentRetrieval )
-                        {
-                            case CurrentRetrieval.Prices:
-                                RetrievePriceData( jobDone );
-
-                                _currentRetrieval = CurrentRetrieval.Name;
-
-                                break;
-
-                            case CurrentRetrieval.Name:
-                                RetrieveSymbolInfo( jobDone );
-
-                                _currentRetrieval = CurrentRetrieval.Prices;
-                                _index++;
-
-                                break;
-                        }
-
-                        if( _index >= _config.Tickers.Count )
-                            jobDone.Set();
-                    }
+                    _logger.Error( $"Argument is not a {nameof(AutoResetEvent)}" );
                 }
-                finally
+                else
                 {
-                    Monitor.Exit( _lockObject );
+                    switch( _currentRetrieval )
+                    {
+                        case CurrentRetrieval.Prices:
+                            RetrievePriceData( jobDone );
+
+                            _currentRetrieval = CurrentRetrieval.Name;
+
+                            break;
+
+                        case CurrentRetrieval.Name:
+                            RetrieveSymbolInfo( jobDone );
+
+                            _currentRetrieval = CurrentRetrieval.Prices;
+                            _index++;
+
+                            break;
+                    }
+
+                    if( _index >= _config.Tickers.Count )
+                        jobDone.Set();
                 }
+            }
+            finally
+            {
+                Monitor.Exit( _lockObject );
+            }
         }
 
         protected void RetrievePriceData( AutoResetEvent jobDone )

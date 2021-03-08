@@ -10,14 +10,14 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
         }
 
-        public override UpdaterResult Validate( string? origValue, out string? newValue )
+        public override UpdaterResult Update( string? origValue, out string? newValue )
         {
             newValue = origValue;
 
             if( !string.IsNullOrEmpty( origValue ) )
                 return UpdaterResult.OriginalOkay;
 
-            var apiKey = GetText( origValue ?? "**undefined**",
+            var apiKey = Prompters.GetSingleValue( origValue ?? "**undefined**",
                 "AlphaVantage API Key" );
 
             newValue = apiKey;

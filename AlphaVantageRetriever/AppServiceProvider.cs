@@ -33,13 +33,6 @@ namespace J4JSoftware.AlphaVantageRetriever
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            var channelInfo = new ChannelInformation()
-                .AddChannel<ConsoleConfig>("Logger:Channels:Console")
-                .AddChannel<FileConfig>("Logger:Channels:File");
-
-            builder.RegisterJ4JLogging<J4JLoggerConfiguration>(
-                new ChannelFactory(configRoot, channelInfo, "Logger"));
-
             builder.RegisterType<DataRetriever>()
                 .SingleInstance()
                 .AsSelf();

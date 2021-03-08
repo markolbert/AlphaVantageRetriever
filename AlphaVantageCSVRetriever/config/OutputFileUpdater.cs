@@ -11,14 +11,14 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
         }
 
-        public override UpdaterResult Validate( string? origValue, out string? newValue )
+        public override UpdaterResult Update( string? origValue, out string? newValue )
         {
             newValue = origValue;
 
             if( !string.IsNullOrEmpty( origValue ) && File.Exists( origValue ) )
                 return UpdaterResult.OriginalOkay;
 
-            var filePath = GetText( origValue ?? "**undefined**",
+            var filePath = Prompters.GetSingleValue( origValue ?? "**undefined**",
                 "output file path",
                 Configuration.GetDefaultOutputFile() );
 

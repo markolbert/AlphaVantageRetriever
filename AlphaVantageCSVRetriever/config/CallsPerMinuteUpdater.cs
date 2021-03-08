@@ -10,14 +10,14 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
         }
 
-        public override UpdaterResult Validate( float origValue, out float newValue )
+        public override UpdaterResult Update( float origValue, out float newValue )
         {
             newValue = origValue;
 
             if( origValue > 0 )
                 return UpdaterResult.OriginalOkay;
 
-            newValue = GetSingleValue( origValue, "calls per minute", 4.5F );
+            newValue = Prompters.GetSingleValue( origValue, "calls per minute", 4.5F );
 
             return newValue > 0F ? UpdaterResult.Changed : UpdaterResult.InvalidUserInput;
         }

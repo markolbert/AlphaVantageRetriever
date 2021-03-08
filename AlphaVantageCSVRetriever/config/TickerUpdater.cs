@@ -11,14 +11,14 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
         {
         }
 
-        public override UpdaterResult Validate( List<string>? origValue, out List<string>? newValue )
+        public override UpdaterResult Update( List<string>? origValue, out List<string>? newValue )
         {
             newValue = origValue;
 
             if( origValue?.Count > 0 )
                 return UpdaterResult.OriginalOkay;
 
-            newValue = GetMultipleValues( origValue ?? new List<string>(), "ticker symbols" );
+            newValue = Prompters.GetMultipleValues( origValue ?? new List<string>(), "ticker symbols" );
 
             return newValue.Count > 0 ? UpdaterResult.Changed : UpdaterResult.InvalidUserInput;
         }

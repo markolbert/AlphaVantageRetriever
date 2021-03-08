@@ -14,27 +14,25 @@ namespace J4JSoftware.AlphaVantageCSVRetriever
 {
     public class CompositionRoot : J4JCompositionRoot<J4JLoggerConfiguration>
     {
+        public static CompositionRoot Default { get; }
+
         static CompositionRoot()
         {
-            Default = new CompositionRoot
-            {
-                IncludeLastEvent = false,
-                LoggingSectionKey = "Logger",
-                UseConsoleLifetime = true
-            };
-
-            Default.ChannelInformation.AddChannel<ConsoleConfig>( "Logger:Channels:Console" )
-                .AddChannel<FileConfig>( "Logger.Channels.File" );
-
+            Default = new CompositionRoot();
             Default.Initialize();
         }
 
         private CompositionRoot()
             : base( "J4JSoftware", "AlphaVantageRetriever" )
         {
-        }
+            UseConsoleLifetime = true;
 
-        public static CompositionRoot Default { get; }
+            var channelConfig = new ChannelConfigProvider( "Logger" )
+                .AddChannel<ConsoleConfig>( "Channels:Console" )
+                .AddChannel<FileConfig>( "Channels:File" );
+
+            ConfigurationBasedLogging( channelConfig );
+        }
 
         public DataRetriever GetDataRetriever()
         {
