@@ -1,15 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlphaVantageRetriever", "AlphaVantageRetriever\AlphaVantageRetriever.csproj", "{BFDFB6DF-47FD-4FF0-A747-785C2DB6214F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "J4JLogging", "..\J4JLogging\J4JLogging\J4JLogging.csproj", "{DEADAC8F-2A01-42DF-996C-276AB58C46EE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCoreUtilities", "..\EFCoreUtilities\EFCoreUtilities\EFCoreUtilities.csproj", "{7C655D63-A667-405F-8B7D-347C4183530E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gitdoc", "gitdoc", "{3BE7E7C7-2412-4072-B37D-FF05654E1939}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,8 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gitdoc", "gitdoc", "{3BE7E7
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlphaVantageCSVRetriever", "AlphaVantageCSVRetriever\AlphaVantageCSVRetriever.csproj", "{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutofacJ4JLogging", "..\J4JLogging\AutoFacJ4JLogging\AutofacJ4JLogging.csproj", "{64E5279C-EACE-428B-9638-24148CA62D20}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection", "..\ProgrammingUtilities\DependencyInjection\DependencyInjection.csproj", "{17BEBECE-DA1F-4924-B4D1-37505F58382C}"
 EndProject
@@ -36,36 +28,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BFDFB6DF-47FD-4FF0-A747-785C2DB6214F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BFDFB6DF-47FD-4FF0-A747-785C2DB6214F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BFDFB6DF-47FD-4FF0-A747-785C2DB6214F}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{BFDFB6DF-47FD-4FF0-A747-785C2DB6214F}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
-		{BFDFB6DF-47FD-4FF0-A747-785C2DB6214F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BFDFB6DF-47FD-4FF0-A747-785C2DB6214F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEADAC8F-2A01-42DF-996C-276AB58C46EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEADAC8F-2A01-42DF-996C-276AB58C46EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEADAC8F-2A01-42DF-996C-276AB58C46EE}.NuGetRelease|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEADAC8F-2A01-42DF-996C-276AB58C46EE}.NuGetRelease|Any CPU.Build.0 = Debug|Any CPU
-		{DEADAC8F-2A01-42DF-996C-276AB58C46EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEADAC8F-2A01-42DF-996C-276AB58C46EE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C655D63-A667-405F-8B7D-347C4183530E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C655D63-A667-405F-8B7D-347C4183530E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C655D63-A667-405F-8B7D-347C4183530E}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{7C655D63-A667-405F-8B7D-347C4183530E}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
-		{7C655D63-A667-405F-8B7D-347C4183530E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C655D63-A667-405F-8B7D-347C4183530E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
 		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
 		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64E5279C-EACE-428B-9638-24148CA62D20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64E5279C-EACE-428B-9638-24148CA62D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64E5279C-EACE-428B-9638-24148CA62D20}.NuGetRelease|Any CPU.ActiveCfg = Debug|Any CPU
-		{64E5279C-EACE-428B-9638-24148CA62D20}.NuGetRelease|Any CPU.Build.0 = Debug|Any CPU
-		{64E5279C-EACE-428B-9638-24148CA62D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64E5279C-EACE-428B-9638-24148CA62D20}.Release|Any CPU.Build.0 = Release|Any CPU
 		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.NuGetRelease|Any CPU.ActiveCfg = Debug|Any CPU
@@ -95,9 +63,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{DEADAC8F-2A01-42DF-996C-276AB58C46EE} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
-		{7C655D63-A667-405F-8B7D-347C4183530E} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
-		{64E5279C-EACE-428B-9638-24148CA62D20} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 		{17BEBECE-DA1F-4924-B4D1-37505F58382C} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 		{101EC219-FE77-44E8-B86A-B9A8A9F6085A} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 		{0E29C2E0-8A92-4369-81BA-E7173A5D844C} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}

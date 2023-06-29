@@ -37,7 +37,6 @@
 			<ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
 				<ProjectReference Include="..\..\EFCoreUtilities\EFCoreUtilities\EFCoreUtilities.csproj" />
 				<ProjectReference Include="..\..\J4JLogging\AutoFacJ4JLogging\AutofacJ4JLogging.csproj" />
-				<ProjectReference Include="..\..\J4JLogging\J4JLogging\J4JLogging.csproj" />
 			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'=='Release'">
