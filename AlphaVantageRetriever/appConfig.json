@@ -1,0 +1,9 @@
+{
+    "AppConfiguration": {
+        "DefaultLimits": {
+            "Interval": "Day",
+            "MaxRequests": 25
+        },
+        "UrlTemplate": "https://www.alphavantage.co/query?function=@function@&@tickerParam@=@ticker@&apikey=@apikey@&datatype=csv"
+    }
+}
