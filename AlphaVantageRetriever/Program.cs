@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -123,10 +122,8 @@ internal class Program
                               .WriteTo.Console()
                               .CreateLogger();
 
-        builder.Register( _ => new LoggerFactory().AddSerilog( Log.Logger ) )
+        builder.Register(_ => new LoggerFactory().AddSerilog(Log.Logger))
                .AsImplementedInterfaces();
-
-        //var config = hbc.Configuration.Get<Configuration>();
 
         builder.Register( _ =>
                 {
