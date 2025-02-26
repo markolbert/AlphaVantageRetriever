@@ -18,12 +18,12 @@ public class DataRetriever : IHostedService
     private readonly Configuration _config;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly bool _validSetup;
-    private readonly List<IParseAlphaText> _alphaParsers;
+    private readonly List<IParseAlpha> _alphaParsers;
     private readonly ILogger? _logger;
 
     public DataRetriever(
         Configuration config,
-        IEnumerable<IParseAlphaText> alphaParsers,
+        IEnumerable<IParseAlpha> alphaParsers,
         IHostApplicationLifetime lifetime,
         ILoggerFactory? loggerFactory
     )

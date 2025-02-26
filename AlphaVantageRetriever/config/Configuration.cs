@@ -5,10 +5,10 @@ namespace J4JSoftware.AlphaVantageRetriever;
 
 public class Configuration
 {
-    [JsonIgnore]
+    [ JsonIgnore ]
     public string? ApiKey { get; set; }
 
-    [JsonIgnore]
+    [ JsonIgnore ]
     public List<string> Tickers { get; set; } = [];
 
     [ JsonIgnore ]

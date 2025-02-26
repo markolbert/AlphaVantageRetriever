@@ -30,7 +30,10 @@ public class AlphaVantageConnector( Configuration config, IDataProtector protect
         return config.UserConfiguration.ApiCallHistory.NumCalls < config.UserConfiguration.ApiLimit.MaxRequests;
     }
 
-    public async IAsyncEnumerable<TAlpha> GetDataAsync<TAlpha>( string url,[EnumeratorCancellation] CancellationToken ctx )
+    public async IAsyncEnumerable<TAlpha> GetDataAsync<TAlpha>(
+        string url,
+        [ EnumeratorCancellation ] CancellationToken ctx
+    )
         where TAlpha : class
     {
         if( KeyValidationState == KeyValidationState.NoValidKeys )

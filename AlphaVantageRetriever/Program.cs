@@ -172,8 +172,8 @@ internal class Program
                .AsImplementedInterfaces()
                .SingleInstance();
 
-        builder.RegisterTypes( typeof( IParseAlphaText ).Assembly.GetTypes() )
-               .Where( t => !t.IsAbstract && t.GetInterface( nameof( IParseAlphaText ) ) != null )
+        builder.RegisterTypes( typeof( IParseAlpha ).Assembly.GetTypes() )
+               .Where( t => !t.IsAbstract && t.GetInterface( nameof( IParseAlpha ) ) != null )
                .AsImplementedInterfaces()
                .SingleInstance();
 
