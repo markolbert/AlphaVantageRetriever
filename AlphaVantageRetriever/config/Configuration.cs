@@ -20,4 +20,5 @@ public class Configuration
     public OutputFormat OutputFormat { get; set; } = OutputFormat.Json;
 
     public string? OutputFilePath { get; set; }
+    public bool VerboseLogging { get; set; }
 }

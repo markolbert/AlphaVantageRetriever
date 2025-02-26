@@ -33,9 +33,14 @@ internal class Program
 
         var host = builder.Build();
 
-        var loggerFactory = host.Services.GetService<ILoggerFactory>();
-        var logger = loggerFactory?.CreateLogger<Program>();
-        CommandLineLoggerFactory.Default.Dump( logger, LogLevel.Error );
+        var config = host.Services.GetRequiredService<Configuration>();
+
+        if( config.VerboseLogging )
+        {
+            var loggerFactory = host.Services.GetService<ILoggerFactory>();
+            var logger = loggerFactory?.CreateLogger<Program>();
+            CommandLineLoggerFactory.Default.Dump(logger);
+        }
 
         await host.RunAsync( CancellationToken );
     }
@@ -92,33 +97,44 @@ internal class Program
 
         // some command line parameters get bound to the UserConfiguration object so they
         // can be persisted
-        options.Bind<UserConfiguration, int>(x => x.ApiLimit.MaxRequests, "c")!
-               .SetDefaultValue(25)
-               .SetDescription("calls per interval");
+        options.Bind<UserConfiguration, int>( x => x.ApiLimit.MaxRequests, "c" )!
+               .SetDefaultValue( 25 )
+               .SetDescription( "calls per interval" )
+               .SetStyle( OptionStyle.SingleValued );
 
         options.Bind<UserConfiguration, LimitInterval>(x => x.ApiLimit.Interval, "i")!
                .SetDefaultValue(LimitInterval.Day)
-               .SetDescription("measurement interval");
+               .SetDescription("measurement interval")
+               .SetStyle(OptionStyle.SingleValued);
 
         // everything else gets bound to the TransientConfiguration object, which is not
         // persisted, although if an ApiKey is defined on the command line, and it's validated,
         // it will be used to update the UserConfiguration EncryptedApiKey property
         options.Bind<Configuration, string?>( x => x.OutputFilePath, "o" )!
                .SetDescription( "output file" )
-               .SetDefaultValue( "AlphaVantage" );
+               .SetDefaultValue( "AlphaVantage" )
+               .SetStyle(OptionStyle.SingleValued);
 
         options.Bind<Configuration, OutputFormat>(x => x.OutputFormat, "s")!
                .SetDescription("output style")
-               .SetDefaultValue(OutputFormat.Csv);
+               .SetDefaultValue(OutputFormat.Csv)
+               .SetStyle(OptionStyle.SingleValued);
 
         options.Bind<Configuration, List<string>>(x => x.Tickers, "t")!
-               .SetDescription("ticker symbols");
+               .SetDescription("ticker symbols")
+               .SetStyle(OptionStyle.Collection);
 
         options.Bind<Configuration, List<AlphaVantageData>>( x => x.DataToRetrieve, "d" )!
-               .SetDescription( "data to be retrieved" );
+               .SetDescription( "data to be retrieved" )
+               .SetStyle(OptionStyle.Collection);
 
         options.Bind<Configuration, string?>(x => x.ApiKey, "k")!
-               .SetDescription("API key");
+               .SetDescription("API key")
+               .SetStyle(OptionStyle.SingleValued);
+
+        options.Bind<Configuration, bool>( x => x.VerboseLogging, "v" )!
+               .SetDescription( "API key" )
+               .SetStyle( OptionStyle.Switch );
 
         options.FinishConfiguration();
     }
