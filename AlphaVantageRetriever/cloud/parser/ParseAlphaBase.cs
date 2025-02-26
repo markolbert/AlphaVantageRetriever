@@ -83,8 +83,6 @@ public abstract class ParseAlphaBase<TOut, TIn>(
     IAsyncEnumerable<object> IParseAlpha.GetData(
         AlphaVantageData avData,
         CancellationToken ctx
-    )
-    {
-        return ParseAlphaResponseAsync( avData, ctx );
-    }
+    ) =>
+        ParseAlphaResponseAsync( avData, ctx );
 }

@@ -8,7 +8,7 @@ public class ApiLimit
     public LimitInterval Interval { get; set; } = LimitInterval.Day;
     public int MaxRequests { get; set; } = 25;
 
-    [JsonIgnore]
+    [ JsonIgnore ]
     public TimeSpan IntervalTimeSpan
     {
         get

@@ -11,7 +11,8 @@ public class ParseAlphaSymbolInfo(
 {
     public override bool SupportsFunction( AlphaVantageData toCheck ) => toCheck == AlphaVantageData.Ticker;
 
-    protected override AlphaSymbolInfo Convert( AlphaVantageData avData, string ticker, AlphaSymbolInfo toConvert ) => toConvert;
+    protected override AlphaSymbolInfo Convert( AlphaVantageData avData, string ticker, AlphaSymbolInfo toConvert ) =>
+        toConvert;
 
     protected override string GetFunctionName( AlphaVantageData avData ) => "SYMBOL_SEARCH";
     protected override string GetTickerParameterName( AlphaVantageData avData ) => "keywords";

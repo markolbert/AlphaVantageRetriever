@@ -13,7 +13,7 @@ public record PriceEntry(
     decimal Close
 )
 {
-    public PriceEntry(string ticker, AlphaPriceData apd, TimeFrame timeFrame )
+    public PriceEntry( string ticker, AlphaPriceData apd, TimeFrame timeFrame )
         : this( ticker, apd.Timestamp, timeFrame, apd.Volume, apd.Open, apd.High, apd.Low, apd.Close )
     {
     }

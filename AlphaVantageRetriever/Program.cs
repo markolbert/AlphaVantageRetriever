@@ -39,17 +39,17 @@ internal class Program
         {
             var loggerFactory = host.Services.GetService<ILoggerFactory>();
             var logger = loggerFactory?.CreateLogger<Program>();
-            CommandLineLoggerFactory.Default.Dump(logger);
+            CommandLineLoggerFactory.Default.Dump( logger );
         }
 
         await host.RunAsync( CancellationToken );
     }
 
-    private static void SetupHost(IConfigurationBuilder configBuilder)
+    private static void SetupHost( IConfigurationBuilder configBuilder )
     {
-        configBuilder.AddEnvironmentVariables(prefix: "ALPHA_");
+        configBuilder.AddEnvironmentVariables( "ALPHA_" );
 
-        SetupCommandLineProcessing(configBuilder);
+        SetupCommandLineProcessing( configBuilder );
     }
 
     private static void SetupApp( HostBuilderContext hbc, IConfigurationBuilder configBuilder )
@@ -58,20 +58,20 @@ internal class Program
 
         // link to application config files
         var dir = Environment.CurrentDirectory;
-        configBuilder.AddJsonFile( Path.Combine( dir, $"{AppConfigFile}.json" ), optional: true )
-                     .AddJsonFile( Path.Combine( dir, $"{AppConfigFile}.{env.EnvironmentName}.json" ), optional: true );
+        configBuilder.AddJsonFile( Path.Combine( dir, $"{AppConfigFile}.json" ), true )
+                     .AddJsonFile( Path.Combine( dir, $"{AppConfigFile}.{env.EnvironmentName}.json" ), true );
 
         dir = Path.Combine( Environment.GetFolderPath( Environment.SpecialFolder.LocalApplicationData ),
                             "J4JSoftware",
                             nameof( AlphaVantageRetriever ) );
 
-        configBuilder.AddJsonFile(Path.Combine(dir, $"{UserConfigFile}.json"), optional: true)
-                     .AddJsonFile(Path.Combine(dir, $"{UserConfigFile}.{env.EnvironmentName}.json"), optional: true);
+        configBuilder.AddJsonFile( Path.Combine( dir, $"{UserConfigFile}.json" ), true )
+                     .AddJsonFile( Path.Combine( dir, $"{UserConfigFile}.{env.EnvironmentName}.json" ), true );
 
-        if (env.IsDevelopment() && env.ApplicationName is { Length: > 0 })
+        if( env.IsDevelopment() && env.ApplicationName is { Length: > 0 } )
         {
-            var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
-            configBuilder.AddUserSecrets(appAssembly, optional: true);
+            var appAssembly = Assembly.Load( new AssemblyName( env.ApplicationName ) );
+            configBuilder.AddUserSecrets( appAssembly, true );
         }
 
         configBuilder.AddEnvironmentVariables();
@@ -85,12 +85,12 @@ internal class Program
 
         var args = Environment.GetCommandLineArgs();
 
-        if (args.Length == 0)
+        if( args.Length == 0 )
             return;
 
-        configBuilder.AddJ4JCommandLineForWindows(out var options, out var cmdLineSrc );
+        configBuilder.AddJ4JCommandLineForWindows( out var options, out var cmdLineSrc );
 
-        if (options == null || cmdLineSrc == null)
+        if( options == null || cmdLineSrc == null )
             return;
 
         cmdLineSrc.SetCommandLine( args );
@@ -102,10 +102,10 @@ internal class Program
                .SetDescription( "calls per interval" )
                .SetStyle( OptionStyle.SingleValued );
 
-        options.Bind<UserConfiguration, LimitInterval>(x => x.ApiLimit.Interval, "i")!
-               .SetDefaultValue(LimitInterval.Day)
-               .SetDescription("measurement interval")
-               .SetStyle(OptionStyle.SingleValued);
+        options.Bind<UserConfiguration, LimitInterval>( x => x.ApiLimit.Interval, "i" )!
+               .SetDefaultValue( LimitInterval.Day )
+               .SetDescription( "measurement interval" )
+               .SetStyle( OptionStyle.SingleValued );
 
         // everything else gets bound to the TransientConfiguration object, which is not
         // persisted, although if an ApiKey is defined on the command line, and it's validated,
@@ -113,24 +113,24 @@ internal class Program
         options.Bind<Configuration, string?>( x => x.OutputFilePath, "o" )!
                .SetDescription( "output file" )
                .SetDefaultValue( "AlphaVantage" )
-               .SetStyle(OptionStyle.SingleValued);
+               .SetStyle( OptionStyle.SingleValued );
 
-        options.Bind<Configuration, OutputFormat>(x => x.OutputFormat, "s")!
-               .SetDescription("output style")
-               .SetDefaultValue(OutputFormat.Csv)
-               .SetStyle(OptionStyle.SingleValued);
+        options.Bind<Configuration, OutputFormat>( x => x.OutputFormat, "s" )!
+               .SetDescription( "output style" )
+               .SetDefaultValue( OutputFormat.Csv )
+               .SetStyle( OptionStyle.SingleValued );
 
-        options.Bind<Configuration, List<string>>(x => x.Tickers, "t")!
-               .SetDescription("ticker symbols")
-               .SetStyle(OptionStyle.Collection);
+        options.Bind<Configuration, List<string>>( x => x.Tickers, "t" )!
+               .SetDescription( "ticker symbols" )
+               .SetStyle( OptionStyle.Collection );
 
         options.Bind<Configuration, List<AlphaVantageData>>( x => x.DataToRetrieve, "d" )!
                .SetDescription( "data to be retrieved" )
-               .SetStyle(OptionStyle.Collection);
+               .SetStyle( OptionStyle.Collection );
 
-        options.Bind<Configuration, string?>(x => x.ApiKey, "k")!
-               .SetDescription("API key")
-               .SetStyle(OptionStyle.SingleValued);
+        options.Bind<Configuration, string?>( x => x.ApiKey, "k" )!
+               .SetDescription( "API key" )
+               .SetStyle( OptionStyle.SingleValued );
 
         options.Bind<Configuration, bool>( x => x.VerboseLogging, "v" )!
                .SetDescription( "API key" )
@@ -142,10 +142,10 @@ internal class Program
     private static void SetupDependencyInjection( HostBuilderContext hbc, ContainerBuilder builder )
     {
         Log.Logger = new LoggerConfiguration()
-                              .WriteTo.Console()
-                              .CreateLogger();
+                    .WriteTo.Console()
+                    .CreateLogger();
 
-        builder.Register(_ => new LoggerFactory().AddSerilog(Log.Logger))
+        builder.Register( _ => new LoggerFactory().AddSerilog( Log.Logger ) )
                .AsImplementedInterfaces();
 
         builder.Register( _ =>
@@ -165,7 +165,7 @@ internal class Program
                                                             Path.Combine(
                                                                 Environment.GetFolderPath(
                                                                     Environment.SpecialFolder.LocalApplicationData ),
-                                                                nameof(AlphaVantageRetriever),
+                                                                nameof( AlphaVantageRetriever ),
                                                                 "DataProtection-Keys" ) ) );
 
         builder.Register( _ => dpProvider.CreateProtector( "apikey" ) )

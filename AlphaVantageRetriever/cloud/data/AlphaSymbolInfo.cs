@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace J4JSoftware.AlphaVantageRetriever;
 
-public record AlphaSymbolInfo( string Symbol, string Name, string Region, string Currency, decimal MatchScore)
+public record AlphaSymbolInfo( string Symbol, string Name, string Region, string Currency, decimal MatchScore )
 {
     public sealed class SymbolEqualityComparer : IEqualityComparer<AlphaSymbolInfo>
     {
@@ -16,13 +16,11 @@ public record AlphaSymbolInfo( string Symbol, string Name, string Region, string
             if( y is null )
                 return false;
 
-            return x.GetType() == y.GetType() && string.Equals( x.Symbol, y.Symbol, StringComparison.OrdinalIgnoreCase );
+            return x.GetType() == y.GetType()
+             && string.Equals( x.Symbol, y.Symbol, StringComparison.OrdinalIgnoreCase );
         }
 
-        public int GetHashCode( AlphaSymbolInfo obj )
-        {
-            return StringComparer.OrdinalIgnoreCase.GetHashCode( obj.Symbol );
-        }
+        public int GetHashCode( AlphaSymbolInfo obj ) => StringComparer.OrdinalIgnoreCase.GetHashCode( obj.Symbol );
     }
 
     public PriceEntry? LatestPrice { get; set; }

@@ -11,7 +11,12 @@ public class ParseAlphaLatestQuoteInfo(
 {
     public override bool SupportsFunction( AlphaVantageData toCheck ) => toCheck == AlphaVantageData.LatestPrice;
 
-    protected override AlphaLatestQuoteData Convert( AlphaVantageData avData, string ticker, AlphaLatestQuoteData toConvert ) => toConvert;
+    protected override AlphaLatestQuoteData Convert(
+        AlphaVantageData avData,
+        string ticker,
+        AlphaLatestQuoteData toConvert
+    ) =>
+        toConvert;
 
     protected override string GetFunctionName( AlphaVantageData avData ) => "GLOBAL_QUOTE";
 }
