@@ -150,7 +150,7 @@ internal class Program
 
         builder.Register( _ =>
                 {
-                    var retVal = hbc.Configuration.Get<Configuration>()!;
+                    var retVal = hbc.Configuration.Get<Configuration>();
                     retVal ??= new Configuration();
 
                     return retVal;

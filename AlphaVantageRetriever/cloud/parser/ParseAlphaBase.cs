@@ -10,7 +10,7 @@ public abstract class ParseAlphaBase<TOut, TIn>(
     IAlphaVantageConnector alphaConnector,
     Configuration config,
     ILoggerFactory? loggerFactory
-) : IParseAlpha<TOut>
+) : IParseAlpha
     where TOut : class
     where TIn : class
 {
@@ -80,7 +80,7 @@ public abstract class ParseAlphaBase<TOut, TIn>(
 
     protected abstract TOut Convert( AlphaVantageData avData, string ticker, TIn toConvert );
 
-    IAsyncEnumerable<object> IParseAlphaText.GetData(
+    IAsyncEnumerable<object> IParseAlpha.GetData(
         AlphaVantageData avData,
         CancellationToken ctx
     )

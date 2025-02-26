@@ -5,7 +5,6 @@ namespace J4JSoftware.AlphaVantageRetriever;
 
 public interface IAlphaVantageConnector
 {
-    string? ApiKey { get; }
     KeyValidationState KeyValidationState { get; }
     bool CallAvailable();
 

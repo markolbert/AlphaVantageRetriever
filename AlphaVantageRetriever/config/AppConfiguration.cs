@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace J4JSoftware.AlphaVantageRetriever;
+﻿namespace J4JSoftware.AlphaVantageRetriever;
 
 public class AppConfiguration
 {
