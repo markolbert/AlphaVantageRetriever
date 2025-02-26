@@ -9,6 +9,7 @@ using Autofac.Extensions.DependencyInjection;
 using J4JSoftware.Configuration.CommandLine;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -31,6 +32,10 @@ internal class Program
                      .ConfigureContainer<ContainerBuilder>( SetupDependencyInjection );
 
         var host = builder.Build();
+
+        var loggerFactory = host.Services.GetService<ILoggerFactory>();
+        var logger = loggerFactory?.CreateLogger<Program>();
+        CommandLineLoggerFactory.Default.Dump( logger, LogLevel.Error );
 
         await host.RunAsync( CancellationToken );
     }
@@ -71,6 +76,8 @@ internal class Program
 
     private static void SetupCommandLineProcessing( IConfigurationBuilder configBuilder )
     {
+        CommandLineLoggerFactory.Default.EnableLogging = true;
+
         var args = Environment.GetCommandLineArgs();
 
         if (args.Length == 0)
