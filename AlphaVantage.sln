@@ -11,15 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gitdoc", "gitdoc", "{3BE7E7
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlphaVantageCSVRetriever", "AlphaVantageCSVRetriever\AlphaVantageCSVRetriever.csproj", "{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DependencyInjection", "..\ProgrammingUtilities\DependencyInjection\DependencyInjection.csproj", "{17BEBECE-DA1F-4924-B4D1-37505F58382C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "J4JCommandLine", "..\J4JCommandLine\J4JCommandLine\J4JCommandLine.csproj", "{101EC219-FE77-44E8-B86A-B9A8A9F6085A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorfulHelp", "..\J4JCommandLine\ColorfulHelp\ColorfulHelp.csproj", "{0E29C2E0-8A92-4369-81BA-E7173A5D844C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUtilities", "..\ProgrammingUtilities\ConsoleUtilities\ConsoleUtilities.csproj", "{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaVantageRetriever", "AlphaVantageRetriever\AlphaVantageRetriever.csproj", "{F3A471FF-FB61-A963-8F30-A4CCE122D86C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,18 +26,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
-		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5994FF7-6904-4E2F-9045-1420E0DA3FE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.NuGetRelease|Any CPU.ActiveCfg = Debug|Any CPU
-		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.NuGetRelease|Any CPU.Build.0 = Debug|Any CPU
-		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17BEBECE-DA1F-4924-B4D1-37505F58382C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{101EC219-FE77-44E8-B86A-B9A8A9F6085A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{101EC219-FE77-44E8-B86A-B9A8A9F6085A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{101EC219-FE77-44E8-B86A-B9A8A9F6085A}.NuGetRelease|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,12 +44,17 @@ Global
 		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.NuGetRelease|Any CPU.Build.0 = Debug|Any CPU
 		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
+		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{17BEBECE-DA1F-4924-B4D1-37505F58382C} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 		{101EC219-FE77-44E8-B86A-B9A8A9F6085A} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 		{0E29C2E0-8A92-4369-81BA-E7173A5D844C} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
