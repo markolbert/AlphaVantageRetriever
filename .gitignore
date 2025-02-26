@@ -13,6 +13,7 @@ FppcFiling.db
 *.sln.docstates
 AlphaVantageAPI.key
 AlphaVantageAPI.json
+launchSettings.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
