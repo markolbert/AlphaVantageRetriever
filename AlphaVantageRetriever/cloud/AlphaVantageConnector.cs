@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
@@ -29,7 +30,7 @@ public class AlphaVantageConnector( Configuration config, IDataProtector protect
         return config.UserConfiguration.ApiCallHistory.NumCalls < config.UserConfiguration.ApiLimit.MaxRequests;
     }
 
-    public async IAsyncEnumerable<TAlpha> GetDataAsync<TAlpha>( string url, CancellationToken ctx )
+    public async IAsyncEnumerable<TAlpha> GetDataAsync<TAlpha>( string url,[EnumeratorCancellation] CancellationToken ctx )
         where TAlpha : class
     {
         if( KeyValidationState == KeyValidationState.NoValidKeys )
@@ -88,7 +89,7 @@ public class AlphaVantageConnector( Configuration config, IDataProtector protect
     }
 
     private string ApplyApiKey( string url, string apiKey ) =>
-        url.Replace( "@apiKey@", config.ApiKey, StringComparison.OrdinalIgnoreCase );
+        url.Replace( "@apiKey@", apiKey, StringComparison.OrdinalIgnoreCase );
 
     private async Task<List<TAlpha>?> GetParsedData<TAlpha>(
         string url,
