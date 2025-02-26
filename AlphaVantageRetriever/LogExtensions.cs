@@ -44,8 +44,11 @@ internal static partial class LogExtensions
     [LoggerMessage(LogLevel.Warning, "{caller}: call limited reached, try again later")]
     public static partial void CallLimitReached(this ILogger logger, [CallerMemberName] string caller = "");
 
-    [LoggerMessage(LogLevel.Error, "{caller}: failed with message '{text}', exception was '{exMesg}'")]
-    public static partial void QueryFailed( this ILogger logger, string text, string exMesg, [ CallerMemberName ] string caller = "" );
+    [LoggerMessage(LogLevel.Error, "{caller}: query failed, AlphaVantage returned '{error}'")]
+    public static partial void QueryError(this ILogger logger, string error, [CallerMemberName] string caller = "");
+
+    [LoggerMessage(LogLevel.Error, "{caller}: query failed, exception was '{exMesg}'")]
+    public static partial void QueryFailed( this ILogger logger, string exMesg, [ CallerMemberName ] string caller = "" );
 
     [LoggerMessage(LogLevel.Error, "{caller}: function {function} not supported")]
     public static partial void FunctionNotSupported(

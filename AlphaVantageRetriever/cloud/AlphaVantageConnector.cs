@@ -107,7 +107,10 @@ public class AlphaVantageConnector( Configuration config, IDataProtector protect
         }
         catch( Exception ex )
         {
-            _logger?.QueryFailed( text ?? string.Empty, ex.Message );
+            if( text?.Contains( "error", StringComparison.OrdinalIgnoreCase ) ?? false )
+                _logger?.QueryError( text );
+            else _logger?.QueryFailed( ex.Message );
+
             return null;
         }
     }
