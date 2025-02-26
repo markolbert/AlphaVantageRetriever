@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "AlphaVantageRetriever": {
+    "AlphaVantageCSVRetriever": {
       "commandName": "Project",
-      "commandLineArgs": "-x -y 2020"
+      "commandLineArgs": "/t IBM /k H4WE0MN7QMO6G7DB /d ticker monthly abcd"
     }
   }
 }
