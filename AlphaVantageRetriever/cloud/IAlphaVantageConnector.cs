@@ -9,5 +9,5 @@ public interface IAlphaVantageConnector
     bool CallAvailable();
 
     IAsyncEnumerable<TAlpha> GetDataAsync<TAlpha>( string url, CancellationToken ctx )
-        where TAlpha : class;
+        where TAlpha : class, new();
 }

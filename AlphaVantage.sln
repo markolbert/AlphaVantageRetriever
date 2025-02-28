@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "J4JCommandLine", "..\J4JCom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ColorfulHelp", "..\J4JCommandLine\ColorfulHelp\ColorfulHelp.csproj", "{0E29C2E0-8A92-4369-81BA-E7173A5D844C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleUtilities", "..\ProgrammingUtilities\ConsoleUtilities\ConsoleUtilities.csproj", "{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaVantageRetriever", "AlphaVantageRetriever\AlphaVantageRetriever.csproj", "{F3A471FF-FB61-A963-8F30-A4CCE122D86C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileUtilities", "..\ProgrammingUtilities\FileUtilities\src\FileUtilities.csproj", "{A1114B22-FB43-D661-4320-A27F3585849B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,18 +38,18 @@ Global
 		{0E29C2E0-8A92-4369-81BA-E7173A5D844C}.NuGetRelease|Any CPU.Build.0 = Debug|Any CPU
 		{0E29C2E0-8A92-4369-81BA-E7173A5D844C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E29C2E0-8A92-4369-81BA-E7173A5D844C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.NuGetRelease|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.NuGetRelease|Any CPU.Build.0 = Debug|Any CPU
-		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
 		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
 		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3A471FF-FB61-A963-8F30-A4CCE122D86C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1114B22-FB43-D661-4320-A27F3585849B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1114B22-FB43-D661-4320-A27F3585849B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1114B22-FB43-D661-4320-A27F3585849B}.NuGetRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{A1114B22-FB43-D661-4320-A27F3585849B}.NuGetRelease|Any CPU.Build.0 = Release|Any CPU
+		{A1114B22-FB43-D661-4320-A27F3585849B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1114B22-FB43-D661-4320-A27F3585849B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,7 +57,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{101EC219-FE77-44E8-B86A-B9A8A9F6085A} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 		{0E29C2E0-8A92-4369-81BA-E7173A5D844C} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
-		{7F79FCA4-09C5-43AE-BA3F-183D511AFC20} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
+		{A1114B22-FB43-D661-4320-A27F3585849B} = {FB24A16E-4AE6-42CF-AEA9-0E010A421AD7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {80823F58-7DA0-4AB3-B332-CD8D4AF5CE8C}

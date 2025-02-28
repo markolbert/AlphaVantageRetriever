@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using J4JSoftware.FileUtilities;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
-using ServiceStack;
 
 namespace J4JSoftware.AlphaVantageRetriever;
 
@@ -34,7 +35,7 @@ public class AlphaVantageConnector( Configuration config, IDataProtector protect
         string url,
         [ EnumeratorCancellation ] CancellationToken ctx
     )
-        where TAlpha : class
+        where TAlpha : class, new()
     {
         if( KeyValidationState == KeyValidationState.NoValidKeys )
         {
@@ -98,22 +99,27 @@ public class AlphaVantageConnector( Configuration config, IDataProtector protect
         string url,
         CancellationToken ctx
     )
-        where TAlpha : class
+        where TAlpha : class, new()
     {
-        string? text = null;
+        using var httpClient = new HttpClient();
 
         try
         {
-            text = await url.GetStringFromUrlAsync( token: ctx );
+            var importContext = new ImportContext
+            {
+                HasHeaders = true, 
+                ImportStream = await httpClient.GetStreamAsync( url, ctx )
+            };
+
             RecordCall();
 
-            return text.FromCsv<List<TAlpha>>();
+            using var reader = new CsvTableReader<TAlpha>( loggerFactory );
+
+            return reader.GetData( importContext ).ToList();
         }
         catch( Exception ex )
         {
-            if( text?.Contains( "error", StringComparison.OrdinalIgnoreCase ) ?? false )
-                _logger?.QueryError( text );
-            else _logger?.QueryFailed( ex.Message );
+            _logger?.QueryFailed( ex.Message );
 
             return null;
         }

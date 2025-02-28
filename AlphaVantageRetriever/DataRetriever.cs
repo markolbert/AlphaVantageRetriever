@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using CsvHelper;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using ServiceStack;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace J4JSoftware.AlphaVantageRetriever;
@@ -159,7 +160,11 @@ public class DataRetriever : IHostedService
             case OutputFormat.Csv:
                 _logger?.OutputFileStarted( revisedFileName );
 
-                await File.WriteAllTextAsync( filePath, data.ToCsv(), ctx );
+                await using( var fileWriter = new StreamWriter( filePath ) )
+                {
+                    await using var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
+                    await csvWriter.WriteRecordsAsync( data, ctx );
+                }
 
                 _logger?.OutputFileCompleted();
 

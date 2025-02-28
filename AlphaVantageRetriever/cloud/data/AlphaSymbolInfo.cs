@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using J4JSoftware.FileUtilities;
 
 namespace J4JSoftware.AlphaVantageRetriever;
 
-public record AlphaSymbolInfo( string Symbol, string Name, string Region, string Currency, decimal MatchScore )
+public class AlphaSymbolInfo
 {
     public sealed class SymbolEqualityComparer : IEqualityComparer<AlphaSymbolInfo>
     {
@@ -23,6 +24,20 @@ public record AlphaSymbolInfo( string Symbol, string Name, string Region, string
         public int GetHashCode( AlphaSymbolInfo obj ) => StringComparer.OrdinalIgnoreCase.GetHashCode( obj.Symbol );
     }
 
-    public PriceEntry? LatestPrice { get; set; }
-    public List<PriceEntry> HistoricalPrices { get; } = [];
+    [CsvField("symbol")]
+    public string Symbol { get; set; } = null!;
+    [CsvField("name")]
+    public string Name { get; set; } = null!;
+    [CsvField("region")]
+    public string Region { get; set; } = null!;
+    [CsvField("marketOpen")]
+    public TimeSpan MarketOpen { get; set; }
+    [ CsvField( "marketClose" ) ]
+    public TimeSpan MarketClose { get; set; }
+    [CsvField("timezone")]
+    public string TimeZone { get; set; } = null!;
+    [CsvField("currency")]
+    public string Currency { get; set; } = null!;
+    [CsvField("matchScore")]
+    public decimal MatchScore { get; set; }
 }

@@ -12,7 +12,7 @@ public abstract class ParseAlphaBase<TOut, TIn>(
     ILoggerFactory? loggerFactory
 ) : IParseAlpha
     where TOut : class
-    where TIn : class
+    where TIn : class, new()
 {
     protected Configuration Configuration { get; } = config;
     protected ILogger? Logger { get; } = loggerFactory?.CreateLogger<ParseAlphaBase<TOut, TIn>>();
