@@ -17,7 +17,7 @@ public class Configuration
     public AppConfiguration AppConfiguration { get; set; } = new();
     public UserConfiguration UserConfiguration { get; set; } = new();
 
-    public OutputFormat OutputFormat { get; set; } = OutputFormat.Json;
+    public OutputFormat OutputFormat { get; set; } = OutputFormat.Csv;
 
     public string? OutputFilePath { get; set; }
     public bool VerboseLogging { get; set; }
