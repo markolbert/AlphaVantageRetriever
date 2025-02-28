@@ -83,26 +83,16 @@ internal class Program
     {
         CommandLineLoggerFactory.Default.EnableLogging = true;
 
-        var args = Environment.GetCommandLineArgs();
-
-        if( args.Length == 0 )
-            return;
-
-        configBuilder.AddJ4JCommandLineForWindows( out var options, out var cmdLineSrc );
-
-        if( options == null || cmdLineSrc == null )
-            return;
-
-        cmdLineSrc.SetCommandLine( args );
+        var optionBuilder = new J4JCommandLineBuilder( StringComparison.OrdinalIgnoreCase );
 
         // some command line parameters get bound to the UserConfiguration object so they
         // can be persisted
-        options.Bind<UserConfiguration, int>( x => x.ApiLimit.MaxRequests, "c" )!
+        optionBuilder.Bind<UserConfiguration, int>( x => x.ApiLimit.MaxRequests, "c" )!
                .SetDefaultValue( 25 )
                .SetDescription( "calls per interval" )
                .SetStyle( OptionStyle.SingleValued );
 
-        options.Bind<UserConfiguration, LimitInterval>( x => x.ApiLimit.Interval, "i" )!
+        optionBuilder.Bind<UserConfiguration, LimitInterval>( x => x.ApiLimit.Interval, "i" )!
                .SetDefaultValue( LimitInterval.Day )
                .SetDescription( "measurement interval" )
                .SetStyle( OptionStyle.SingleValued );
@@ -110,33 +100,34 @@ internal class Program
         // everything else gets bound to the TransientConfiguration object, which is not
         // persisted, although if an ApiKey is defined on the command line, and it's validated,
         // it will be used to update the UserConfiguration EncryptedApiKey property
-        options.Bind<Configuration, string?>( x => x.OutputFilePath, "o" )!
+        optionBuilder.Bind<Configuration, string?>( x => x.OutputFilePath, "o" )!
                .SetDescription( "output file" )
                .SetDefaultValue( "AlphaVantage" )
                .SetStyle( OptionStyle.SingleValued );
 
-        options.Bind<Configuration, OutputFormat>( x => x.OutputFormat, "s" )!
+        optionBuilder.Bind<Configuration, OutputFormat>( x => x.OutputFormat, "s" )!
                .SetDescription( "output style" )
                .SetDefaultValue( OutputFormat.Csv )
                .SetStyle( OptionStyle.SingleValued );
 
-        options.Bind<Configuration, List<string>>( x => x.Tickers, "t" )!
+        optionBuilder.Bind<Configuration, List<string>>( x => x.Tickers, "t" )!
                .SetDescription( "ticker symbols" )
                .SetStyle( OptionStyle.Collection );
 
-        options.Bind<Configuration, List<AlphaVantageData>>( x => x.DataToRetrieve, "d" )!
+        optionBuilder.Bind<Configuration, List<AlphaVantageData>>( x => x.DataToRetrieve, "d" )!
                .SetDescription( "data to be retrieved" )
                .SetStyle( OptionStyle.Collection );
 
-        options.Bind<Configuration, string?>( x => x.ApiKey, "k" )!
+        optionBuilder.Bind<Configuration, string?>( x => x.ApiKey, "k" )!
                .SetDescription( "API key" )
                .SetStyle( OptionStyle.SingleValued );
 
-        options.Bind<Configuration, bool>( x => x.VerboseLogging, "v" )!
+        optionBuilder.Bind<Configuration, bool>( x => x.VerboseLogging, "v" )!
                .SetDescription( "API key" )
                .SetStyle( OptionStyle.Switch );
 
-        options.FinishConfiguration();
+        ILexicalElements? tokens = null;
+        configBuilder.AddJ4JCommandLine( optionBuilder, ref tokens );
     }
 
     private static void SetupDependencyInjection( HostBuilderContext hbc, ContainerBuilder builder )
